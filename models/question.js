@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema; 
 
 const questionSchema = new Schema({
+    id: {
+        type: String,
+        required: true
+    },
     questionType: {
         type: String,
         required: true
