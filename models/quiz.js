@@ -25,10 +25,12 @@ const quizSchema = new Schema({
     },
     minPoints: {
         type: Number,
+        min: -1000,
         required: true,
     },
     maxPoints: {
         type: Number,
+        max: 1000,
         required: true,
     },
     questions: [questionSchema] 

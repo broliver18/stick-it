@@ -12,13 +12,28 @@ const io = new Server(server, {
   },
 });
 
+async function createQuiz(questions, input) {
+  const { quizName, minPoints, maxPoints } = input;
+  try {
+    await Quiz.create({
+      quizName,
+      minPoints,
+      maxPoints,
+      questions,
+    })
+    console.log("success")
+  } catch (e) {
+    console.log(e.message);
+  }
+}
+
 io.on("connection", (socket) => {
   socket.on("display-info", (nameInput, pinInput) => {
     console.log(nameInput);
     console.log(pinInput);
   });
 
-  socket.on("quiz-info", (questions) => {
+  socket.on("quiz-info", (questions, input) => {
     if (
       questions.find(
         (questionInfo) =>
@@ -34,8 +49,14 @@ io.on("connection", (socket) => {
       )
     ) {
       const message = "Please fill out all required input fields.";
-      socket.emit("error-message", message);
+      socket.emit("error-message-one", message);
+    } else {
+      const createdQuiz = createQuiz(questions, input);
+      console.log(createdQuiz);
     }
+    
+    
+
   });
 });
 
