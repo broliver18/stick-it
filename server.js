@@ -2,7 +2,7 @@ const express = require("express");
 const { Server } = require("socket.io");
 const http = require("http");
 const mongoose = require("mongoose");
-const Question = require("./models/question");
+const Quiz = require("./models/quiz");
 
 const app = express();
 const server = http.createServer(app);
