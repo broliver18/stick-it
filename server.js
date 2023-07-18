@@ -15,7 +15,7 @@ const io = new Server(server, {
 async function createQuiz(questions, quizDetails) {
   const { quizName, minPoints, maxPoints } = quizDetails;
   try {
-    const existingQuiz = await Quiz.findOne({ quizName })
+    const existingQuiz = await Quiz.findOne({ quizName });
     if (existingQuiz) {
       return "A quiz with this name already exists.";
     } else {
@@ -24,13 +24,15 @@ async function createQuiz(questions, quizDetails) {
         minPoints,
         maxPoints,
         questions,
-      })
+      });
       if (quiz) return "success";
     }
   } catch (e) {
     return e.message;
   }
 }
+
+const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
 
 io.on("connection", (socket) => {
   socket.on("display-info", (nameInput, pinInput) => {
@@ -56,10 +58,14 @@ io.on("connection", (socket) => {
       const errorMessage = "Please fill out all required input fields.";
       socket.emit("error-message", errorMessage);
     } else {
-      const createdQuiz = createQuiz(questions, quizDetails)
-      createdQuiz.then(message => socket.emit("create-quiz", message));
+      const createdQuiz = createQuiz(questions, quizDetails);
+      createdQuiz.then((message) => socket.emit("create-quiz", message));
     }
   });
+
+  socket.on("initialize-quizzes", () =>
+    getAllQuizzes().then((quizzes) => socket.emit("get-all-quizzes", quizzes))
+  );
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
