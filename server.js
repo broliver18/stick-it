@@ -57,7 +57,7 @@ io.on("connection", (socket) => {
       socket.emit("error-message", errorMessage);
     } else {
       const createdQuiz = createQuiz(questions, quizDetails)
-      createdQuiz.then(data => socket.emit("create-quiz", data));
+      createdQuiz.then(message => socket.emit("create-quiz", message));
     }
   });
 });
