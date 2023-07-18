@@ -12,18 +12,23 @@ const io = new Server(server, {
   },
 });
 
-async function createQuiz(questions, input) {
-  const { quizName, minPoints, maxPoints } = input;
+async function createQuiz(questions, quizDetails) {
+  const { quizName, minPoints, maxPoints } = quizDetails;
   try {
-    await Quiz.create({
-      quizName,
-      minPoints,
-      maxPoints,
-      questions,
-    })
-    console.log("success")
+    const existingQuiz = await Quiz.findOne({ quizName })
+    if (existingQuiz) {
+      return "A quiz with this name already exists.";
+    } else {
+      const quiz = await Quiz.create({
+        quizName,
+        minPoints,
+        maxPoints,
+        questions,
+      })
+      if (quiz) return "success";
+    }
   } catch (e) {
-    console.log(e.message);
+    return e.message;
   }
 }
 
@@ -33,7 +38,7 @@ io.on("connection", (socket) => {
     console.log(pinInput);
   });
 
-  socket.on("quiz-info", (questions, input) => {
+  socket.on("quiz-info", (questions, quizDetails) => {
     if (
       questions.find(
         (questionInfo) =>
@@ -48,15 +53,12 @@ io.on("connection", (socket) => {
               !questionInfo.correctAnswer))
       )
     ) {
-      const message = "Please fill out all required input fields.";
-      socket.emit("error-message-one", message);
+      const errorMessage = "Please fill out all required input fields.";
+      socket.emit("error-message", errorMessage);
     } else {
-      const createdQuiz = createQuiz(questions, input);
-      console.log(createdQuiz);
+      const createdQuiz = createQuiz(questions, quizDetails)
+      createdQuiz.then(data => socket.emit("create-quiz", data));
     }
-    
-    
-
   });
 });
 
