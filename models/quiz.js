@@ -21,6 +21,7 @@ const questionSchema = new Schema({
 const quizSchema = new Schema({
     quizName: {
         type: String,
+        maxLength: 15,
         required: true,
     },
     minPoints: {

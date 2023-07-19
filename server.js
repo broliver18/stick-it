@@ -32,6 +32,8 @@ async function createQuiz(questions, quizDetails) {
   }
 }
 
+const deleteQuiz = (id) =>
+  Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
 
 io.on("connection", (socket) => {
@@ -66,6 +68,8 @@ io.on("connection", (socket) => {
   socket.on("initialize-quizzes", () =>
     getAllQuizzes().then((quizzes) => socket.emit("get-all-quizzes", quizzes))
   );
+
+  socket.on("delete-quiz", (id) => deleteQuiz(id));
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
