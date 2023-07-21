@@ -16,7 +16,7 @@ class Games {
         return game;
     }
     getGame(hostId) {
-        return this.games.filter((game) => game.hostId === hostId)[0]
+        return this.games.find((game) => game.hostId === hostId);
     }
 }
 

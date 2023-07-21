@@ -43,9 +43,22 @@ const deleteQuiz = (id) =>
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
 
 io.on("connection", (socket) => {
-  socket.on("display-info", (nameInput, pinInput) => {
-    console.log(nameInput);
-    console.log(pinInput);
+  socket.on("player-join", (displayName, pin) => {
+    console.log("I ran once")
+    const pinInt = parseInt(pin);
+    let gameFound = false;
+    for (let i = 0; i < games.games.length; i++) {
+      if (pinInt === games.games[i].pin) {
+        console.log("Player connected to game");
+        const hostId = games.games[i].hostId;
+        players.addPlayer(hostId, socket.id, displayName, { score: 0, answer: 0 });
+        socket.join(pinInt);
+        const playersInGame = players.getPlayers(hostId);
+        io.to(pinInt).emit("update-player-lobby", playersInGame);
+        gameFound = true;
+      }
+    }
+    socket.emit("game-found-status", gameFound);
   });
 
   socket.on("quiz-info", (questions, quizDetails) => {
@@ -77,10 +90,18 @@ io.on("connection", (socket) => {
 
   socket.on("delete-quiz", (id) => deleteQuiz(id));
 
-  socket.on("host-join", () => {
+  socket.on("host-join", (id) => {
     const gamePin = Math.floor(Math.random()*90000) + 10000;
-    socket.join(gamePin)
-    socket.emit("get-pin", gamePin);
+    games.addGame(gamePin, socket.id, false, {
+      playersAnswered: 0,
+      questionsLive: false,
+      gameId: id,
+      question: 1,
+    });
+    const game = games.getGame(socket.id);
+    socket.join(game.pin);
+    console.log(`Game created with pin: ${game.pin}`);
+    socket.emit("show-game-pin", game.pin);
   })
 });
 
