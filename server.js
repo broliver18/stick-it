@@ -44,7 +44,6 @@ const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
 
 io.on("connection", (socket) => {
   socket.on("player-join", (displayName, pin) => {
-    console.log("I ran once")
     const pinInt = parseInt(pin);
     let gameFound = false;
     for (let i = 0; i < games.games.length; i++) {

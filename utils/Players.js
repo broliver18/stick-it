@@ -18,7 +18,7 @@ class Players {
     return player;
   }
   getPlayer(playerId) {
-    return this.players.filter((player) => player.playerId === playerId)[0];
+    return this.players.find((player) => player.playerId === playerId);
   }
   getPlayers(hostId) {
     return this.players.filter((player) => player.hostId === hostId);
