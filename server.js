@@ -102,6 +102,41 @@ io.on("connection", (socket) => {
     console.log(`Game created with pin: ${game.pin}`);
     socket.emit("show-game-pin", game.pin);
   })
+
+  socket.on("disconnection", () => {
+    const game = games.getGame(socket.id);
+    if (game) {
+      if (game.gameLive === false) {
+        games.removeGame(socket.id);
+        console.log(`game ended with pin: ${game.pin}`);
+        
+        const playersToRemove = players.getPlayers(game.hostId);
+
+        for (let i = 0; i < playersToRemove.length; i++) {
+          players.removePlayer(playersToRemove[i].playerId);
+        }
+
+        io.to(game.pin).emit("host-disconnect");
+        socket.leave(game.pin);   
+      }
+    } else {
+      const player = players.getPlayer(socket.id);
+
+      if (player) {
+        const hostId = player.hostId;
+        const game = games.getGame(hostId);
+        const pin = game.pin;
+
+        if (game.gameLive === false) {
+          players.removePlayer(socket.id);
+          const playersInGame = players.getPlayers(hostId);
+
+          io.to(pin).emit("updatePlayerLobby", playersInGame);
+          socket.leave(pin);
+        }
+      }
+    }
+  })
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
