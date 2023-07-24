@@ -4,8 +4,8 @@ const http = require("http");
 const mongoose = require("mongoose");
 const Quiz = require("./models/quiz");
 
-const { Games } = require("./utils/games");
-const { Players } = require("./utils/players");
+const { Games } = require("./utils/Games");
+const { Players } = require("./utils/Players");
 
 const app = express();
 const server = http.createServer(app);
