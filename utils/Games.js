@@ -3,12 +3,12 @@ class Games {
         this.games = [];
     }
     addGame(pin, hostId, gameLive, gameData) {
-        var game = {pin, hostId, gameLive, gameData};
+        const game = {pin, hostId, gameLive, gameData};
         this.games.push(game);
         return game;
     }
     removeGame(hostId) {
-        var game = this.getGame(hostId);
+        const game = this.getGame(hostId);
         
         if (game) {
             this.games = this.games.filter((game) => game.hostId !== hostId);

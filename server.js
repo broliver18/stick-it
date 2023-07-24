@@ -18,6 +18,10 @@ const io = new Server(server, {
 const games = new Games();
 const players = new Players();
 
+const deleteQuiz = (id) =>
+  Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
+const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
+
 async function createQuiz(questions, quizDetails) {
   const { quizName, minPoints, maxPoints } = quizDetails;
   try {
@@ -37,10 +41,6 @@ async function createQuiz(questions, quizDetails) {
     return e.message;
   }
 }
-
-const deleteQuiz = (id) =>
-  Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
-const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
 
 io.on("connection", (socket) => {
   socket.on("player-join", (displayName, pin) => {
@@ -134,8 +134,9 @@ io.on("connection", (socket) => {
           players.removePlayer(socket.id);
           const playersInGame = players.getPlayers(hostId);
 
-          io.to(pin).emit("updatePlayerLobby", playersInGame);
+          io.to(pin).emit("update-player-lobby", playersInGame);
           socket.leave(pin);
+          console.log("Player removed from game");
         }
       }
     }
@@ -144,10 +145,36 @@ io.on("connection", (socket) => {
   socket.on("remove-existing-games", () => {
     const game = games.getGame(socket.id);
     if (game) {
+      if (game.gameLive === false) {
+        games.removeGame(socket.id);
+        console.log(`game ended with pin: ${game.pin}`);
+
+        const playersToRemove = players.getPlayers(game.hostId);
+
+        for (let i = 0; i < playersToRemove.length; i++) {
+          players.removePlayer(playersToRemove[i].playerId);
+        }
+
+        io.to(game.pin).emit("host-disconnect");
+        socket.leave(game.pin); 
+      }
+    }
+  });
+
+  socket.on("player-disconnect", () => {
+    const player = players.getPlayer(socket.id);
+
+    if (player) {
+      const hostId = player.hostId;
+      const game = games.getGame(hostId);
       const pin = game.pin;
-      games.removeGame(socket.id);
-      io.to(pin).emit("host-disconnect");
-      console.log(`game ended with pin: ${game.pin}`);
+      if (game.gameLive === false) {
+        players.removePlayer(socket.id);
+        const playersInGame = players.getPlayers(hostId);
+        io.to(pin).emit("update-player-lobby", playersInGame);
+        socket.leave(pin);
+        console.log("Player removed from game");
+      }
     }
   });
 });
