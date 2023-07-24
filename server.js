@@ -4,8 +4,8 @@ const http = require("http");
 const mongoose = require("mongoose");
 const Quiz = require("./models/quiz");
 
-const { Games } = require("./utils/Games");
-const { Players } = require("./utils/Players");
+const { Games } = require("./utils/games");
+const { Players } = require("./utils/players");
 
 const app = express();
 const server = http.createServer(app);
@@ -50,7 +50,10 @@ io.on("connection", (socket) => {
       if (pinInt === games.games[i].pin) {
         console.log("Player connected to game");
         const hostId = games.games[i].hostId;
-        players.addPlayer(hostId, socket.id, displayName, { score: 0, answer: 0 });
+        players.addPlayer(hostId, socket.id, displayName, {
+          score: 0,
+          answer: 0,
+        });
         socket.join(pinInt);
         const playersInGame = players.getPlayers(hostId);
         io.to(pinInt).emit("update-player-lobby", playersInGame);
@@ -90,7 +93,7 @@ io.on("connection", (socket) => {
   socket.on("delete-quiz", (id) => deleteQuiz(id));
 
   socket.on("host-join", (id) => {
-    const gamePin = Math.floor(Math.random()*90000) + 10000;
+    const gamePin = Math.floor(Math.random() * 90000) + 10000;
     games.addGame(gamePin, socket.id, false, {
       playersAnswered: 0,
       questionsLive: false,
@@ -101,15 +104,15 @@ io.on("connection", (socket) => {
     socket.join(game.pin);
     console.log(`Game created with pin: ${game.pin}`);
     socket.emit("show-game-pin", game.pin);
-  })
+  });
 
-  socket.on("disconnection", () => {
+  socket.on("disconnect", () => {
     const game = games.getGame(socket.id);
     if (game) {
       if (game.gameLive === false) {
         games.removeGame(socket.id);
         console.log(`game ended with pin: ${game.pin}`);
-        
+
         const playersToRemove = players.getPlayers(game.hostId);
 
         for (let i = 0; i < playersToRemove.length; i++) {
@@ -117,7 +120,7 @@ io.on("connection", (socket) => {
         }
 
         io.to(game.pin).emit("host-disconnect");
-        socket.leave(game.pin);   
+        socket.leave(game.pin);
       }
     } else {
       const player = players.getPlayer(socket.id);
@@ -136,7 +139,17 @@ io.on("connection", (socket) => {
         }
       }
     }
-  })
+  });
+
+  socket.on("remove-existing-games", () => {
+    const game = games.getGame(socket.id);
+    if (game) {
+      const pin = game.pin;
+      games.removeGame(socket.id);
+      io.to(pin).emit("host-disconnect");
+      console.log(`game ended with pin: ${game.pin}`);
+    }
+  });
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
