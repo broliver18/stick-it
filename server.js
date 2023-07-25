@@ -134,7 +134,7 @@ io.on("connection", (socket) => {
           players.removePlayer(socket.id);
           const playersInGame = players.getPlayers(hostId);
 
-          io.to(pin).emit("update-player-lobby", playersInGame);
+          io.to(hostId).emit("update-player-lobby", playersInGame);
           socket.leave(pin);
           console.log("Player removed from game");
         }
@@ -171,12 +171,18 @@ io.on("connection", (socket) => {
       if (game.gameLive === false) {
         players.removePlayer(socket.id);
         const playersInGame = players.getPlayers(hostId);
-        io.to(pin).emit("update-player-lobby", playersInGame);
+        io.to(hostId).emit("update-player-lobby", playersInGame);
         socket.leave(pin);
         console.log("Player removed from game");
       }
     }
   });
+
+  socket.on("start-game", () => {
+    const game = games.getGame(socket.id);
+    game.gameLive = true;
+    socket.emit("game-started", game.hostId);
+  })
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
