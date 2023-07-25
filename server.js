@@ -21,6 +21,7 @@ const players = new Players();
 const deleteQuiz = (id) =>
   Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
+const getQuiz = (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz.questions);
 
 async function createQuiz(questions, quizDetails) {
   const { quizName, minPoints, maxPoints } = quizDetails;
@@ -182,6 +183,14 @@ io.on("connection", (socket) => {
     const game = games.getGame(socket.id);
     game.gameLive = true;
     socket.emit("game-started", game.hostId);
+  })
+
+  socket.on("host-join-game", (hostId) => {
+    const game = games.getGame(hostId);
+    const gameId = game.gameData.gameId;
+    getQuiz(gameId).then((questions) => socket.emit("game-questions", questions[0].question))
+    io.to(game.pin).emit("game-started-player");
+    game.gameData.questionsLive = true;
   })
 });
 
