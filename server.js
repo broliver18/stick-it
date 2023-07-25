@@ -21,7 +21,8 @@ const players = new Players();
 const deleteQuiz = (id) =>
   Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
-const getQuiz = (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz.questions);
+const getQuiz = (gameId) =>
+  Quiz.findOne({ _id: gameId }).then((quiz) => quiz.questions);
 
 async function createQuiz(questions, quizDetails) {
   const { quizName, minPoints, maxPoints } = quizDetails;
@@ -157,7 +158,7 @@ io.on("connection", (socket) => {
         }
 
         io.to(game.pin).emit("host-disconnect");
-        socket.leave(game.pin); 
+        socket.leave(game.pin);
       }
     }
   });
@@ -183,15 +184,30 @@ io.on("connection", (socket) => {
     const game = games.getGame(socket.id);
     game.gameLive = true;
     socket.emit("game-started", game.hostId);
-  })
+  });
 
   socket.on("host-join-game", (hostId) => {
     const game = games.getGame(hostId);
-    const gameId = game.gameData.gameId;
-    getQuiz(gameId).then((questions) => socket.emit("game-questions", questions[0].question))
-    io.to(game.pin).emit("game-started-player");
-    game.gameData.questionsLive = true;
-  })
+    if (game) {
+      const gameId = game.gameData.gameId;
+      getQuiz(gameId).then((questions) =>
+        socket.emit("game-questions", questions[0].question)
+      );
+      io.to(game.pin).emit("game-started-player");
+      game.gameData.questionsLive = true;
+    } else {
+      socket.emit("no-game-found");
+    }
+  });
+
+  socket.on("player-join-game", (playerId) => {
+    const player = players.getPlayer(playerId);
+    if (player) {
+      const game = games.getGame(player.hostId);
+    } else {
+      socket.emit("no-game-found")
+    }
+  });
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
