@@ -21,8 +21,7 @@ const players = new Players();
 const deleteQuiz = (id) =>
   Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
-const getQuiz = (gameId) =>
-  Quiz.findOne({ _id: gameId }).then((quiz) => quiz.questions);
+const getQuiz = (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz);
 
 async function createQuiz(questions, quizDetails) {
   const { quizName, minPoints, maxPoints } = quizDetails;
@@ -190,8 +189,8 @@ io.on("connection", (socket) => {
     const game = games.getGame(hostId);
     if (game) {
       const gameId = game.gameData.gameId;
-      getQuiz(gameId).then((questions) =>
-        socket.emit("game-questions", questions[0].question)
+      getQuiz(gameId).then((quiz) =>
+        socket.emit("get-quiz-title", quiz.quizName)
       );
       io.to(game.pin).emit("game-started-player");
       game.gameData.questionsLive = true;
@@ -203,9 +202,14 @@ io.on("connection", (socket) => {
   socket.on("player-join-game", (playerId) => {
     const player = players.getPlayer(playerId);
     if (player) {
-      console.log("Player joined game")
+      const game = games.getGame(player.hostId);
+      if (!game) return;
+      const gameId = game.gameData.gameId;
+      getQuiz(gameId).then((quiz) =>
+        socket.emit("get-quiz-title", quiz.quizName)
+      );
     } else {
-      socket.emit("no-game-found")
+      socket.emit("no-game-found");
     }
   });
 
@@ -213,24 +217,34 @@ io.on("connection", (socket) => {
     const player = players.getPlayer(socket.id);
     if (!player) {
       socket.emit("no-game-found");
-      return
+      return;
     }
     const game = games.getGame(player.hostId);
     if (!game) {
       socket.emit("no-game-found");
       return;
-    } 
+    }
     const gameId = game.gameData.gameId;
-    getQuiz(gameId).then((questions) => {
+    getQuiz(gameId).then((quiz) => {
       let questionData;
+      const questions = quiz.questions;
       const questionInfo = questions[num];
-      const { questionType, question, shortAnswer, answerOne, answerTwo, answerThree, answerFour, correctAnswer} = questionInfo;
+      const {
+        questionType,
+        question,
+        shortAnswer,
+        answerOne,
+        answerTwo,
+        answerThree,
+        answerFour,
+        correctAnswer,
+      } = questionInfo;
       if (questionType === "short-answer") {
         questionData = {
           questionType,
           question,
           shortAnswer,
-        }
+        };
       } else {
         questionData = {
           questionType,
@@ -239,12 +253,12 @@ io.on("connection", (socket) => {
           answerTwo,
           answerThree,
           answerFour,
-          correctAnswer
-        }
+          correctAnswer,
+        };
       }
       socket.emit("question", questionData);
-    })
-  })
+    });
+  });
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
