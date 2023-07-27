@@ -203,11 +203,48 @@ io.on("connection", (socket) => {
   socket.on("player-join-game", (playerId) => {
     const player = players.getPlayer(playerId);
     if (player) {
-      const game = games.getGame(player.hostId);
+      console.log("Player joined game")
     } else {
       socket.emit("no-game-found")
     }
   });
+
+  socket.on("get-question", (num) => {
+    const player = players.getPlayer(socket.id);
+    if (!player) {
+      socket.emit("no-game-found");
+      return
+    }
+    const game = games.getGame(player.hostId);
+    if (!game) {
+      socket.emit("no-game-found");
+      return;
+    } 
+    const gameId = game.gameData.gameId;
+    getQuiz(gameId).then((questions) => {
+      let questionData;
+      const questionInfo = questions[num];
+      const { questionType, question, shortAnswer, answerOne, answerTwo, answerThree, answerFour, correctAnswer} = questionInfo;
+      if (questionType === "short-answer") {
+        questionData = {
+          questionType,
+          question,
+          shortAnswer,
+        }
+      } else {
+        questionData = {
+          questionType,
+          question,
+          answerOne,
+          answerTwo,
+          answerThree,
+          answerFour,
+          correctAnswer
+        }
+      }
+      socket.emit("question", questionData);
+    })
+  })
 });
 
 const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
