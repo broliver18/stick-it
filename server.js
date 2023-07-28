@@ -206,7 +206,11 @@ io.on("connection", (socket) => {
       if (!game) return;
       const gameId = game.gameData.gameId;
       getQuiz(gameId).then((quiz) =>
-        socket.emit("get-quiz-title", quiz.quizName)
+        socket.emit("get-quiz-title", {
+          name: quiz.quizName,
+          minPoints: quiz.minPoints,
+          maxPoints: quiz.maxPoints,
+        })
       );
     } else {
       socket.emit("no-game-found");
