@@ -206,10 +206,11 @@ io.on("connection", (socket) => {
       if (!game) return;
       const gameId = game.gameData.gameId;
       getQuiz(gameId).then((quiz) =>
-        socket.emit("get-quiz-title", {
+        socket.emit("get-quiz-info", {
           name: quiz.quizName,
           minPoints: quiz.minPoints,
           maxPoints: quiz.maxPoints,
+          numberOfQuestions: quiz.questions.length,
         })
       );
     } else {
