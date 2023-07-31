@@ -110,7 +110,6 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const game = games.getGame(socket.id);
     if (game) {
-      if (game.gameLive === false) {
         games.removeGame(socket.id);
         console.log(`game ended with pin: ${game.pin}`);
 
@@ -122,7 +121,6 @@ io.on("connection", (socket) => {
 
         io.to(game.pin).emit("host-disconnect");
         socket.leave(game.pin);
-      }
     } else {
       const player = players.getPlayer(socket.id);
 
@@ -131,13 +129,16 @@ io.on("connection", (socket) => {
         const game = games.getGame(hostId);
         const pin = game.pin;
 
+        players.removePlayer(socket.id);
+        socket.leave(pin);
+
         if (game.gameLive === false) {
-          players.removePlayer(socket.id);
           const playersInGame = players.getPlayers(hostId);
 
           io.to(hostId).emit("update-player-lobby", playersInGame);
-          socket.leave(pin);
           console.log("Player removed from game");
+        } else {
+          console.log("Player left game");
         }
       }
     }
@@ -263,6 +264,40 @@ io.on("connection", (socket) => {
       }
       socket.emit("question", questionData);
     });
+  });
+
+  socket.on("end-game-player", () => {
+    const player = players.getPlayer(socket.id);
+
+    if (player) {
+      const hostId = player.hostId;
+      const game = games.getGame(hostId);
+      const pin = game.pin;
+      if (game.gameLive === true) {
+        players.removePlayer(socket.id);
+        socket.leave(pin);
+        console.log("Player left game");
+      }
+    }
+  });
+
+  socket.on("end-game-host", () => {
+    const game = games.getGame(socket.id);
+    if (game) {
+      if (game.gameLive === true) {
+        games.removeGame(socket.id);
+        console.log(`game ended with pin: ${game.pin}`);
+
+        const playersToRemove = players.getPlayers(game.hostId);
+
+        for (let i = 0; i < playersToRemove.length; i++) {
+          players.removePlayer(playersToRemove[i].playerId);
+        }
+
+        io.to(game.pin).emit("host-disconnect");
+        socket.leave(game.pin);
+      }
+    }
   });
 });
 
