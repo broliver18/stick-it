@@ -45,11 +45,15 @@ async function createQuiz(questions, quizDetails) {
 
 io.on("connection", (socket) => {
   socket.on("player-join", (displayName, pin) => {
+    if (!displayName) {
+      socket.emit("no-name");
+      return;
+    }
+
     const pinInt = parseInt(pin);
     let gameFound = false;
     let playersInGame;
     let hostId;
-
     for (let i = 0; i < games.games.length; i++) {
       if (pinInt === games.games[i].pin) {
         hostId = games.games[i].hostId;
@@ -58,7 +62,6 @@ io.on("connection", (socket) => {
         break;
       }
     }
-
     if (gameFound === true) {
       if (playersInGame.find((player) => player.name === displayName)) {
         socket.emit("name-already-exists");
