@@ -91,14 +91,14 @@ io.on("connection", (socket) => {
     getAllQuizzes().then((quizzes) => socket.emit("get-all-quizzes", quizzes))
   );
 
-  socket.on("delete-quiz", (id) => deleteQuiz(id));
+  socket.on("delete-quiz", (gameId) => deleteQuiz(gameId));
 
-  socket.on("host-join", (id) => {
+  socket.on("host-join", (gameId) => {
     const gamePin = Math.floor(Math.random() * 90000) + 10000;
     games.addGame(gamePin, socket.id, false, {
       playersAnswered: 0,
       questionsLive: false,
-      gameId: id,
+      gameId: gameId,
       question: 1,
     });
     const game = games.getGame(socket.id);
@@ -110,17 +110,17 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     const game = games.getGame(socket.id);
     if (game) {
-        games.removeGame(socket.id);
-        console.log(`game ended with pin: ${game.pin}`);
+      games.removeGame(socket.id);
+      console.log(`game ended with pin: ${game.pin}`);
 
-        const playersToRemove = players.getPlayers(game.hostId);
+      const playersToRemove = players.getPlayers(game.hostId);
 
-        for (let i = 0; i < playersToRemove.length; i++) {
-          players.removePlayer(playersToRemove[i].playerId);
-        }
+      for (let i = 0; i < playersToRemove.length; i++) {
+        players.removePlayer(playersToRemove[i].playerId);
+      }
 
-        io.to(game.pin).emit("host-disconnect");
-        socket.leave(game.pin);
+      io.to(game.pin).emit("host-disconnect");
+      socket.leave(game.pin);
     } else {
       const player = players.getPlayer(socket.id);
 
@@ -219,8 +219,8 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("get-question", (num) => {
-    const player = players.getPlayer(socket.id);
+  socket.on("get-question", (num, playerId) => {
+    const player = players.getPlayer(playerId);
     if (!player) {
       socket.emit("no-game-found");
       return;
@@ -264,6 +264,25 @@ io.on("connection", (socket) => {
       }
       socket.emit("question", questionData);
     });
+  });
+
+  socket.on("player-score", (score, playerId) => {
+    const player = players.getPlayer(playerId);
+
+    if (player) {
+      player.gameData.score = score;
+      player.gameData.answer += 1;
+
+      const hostId = player.hostId;
+      const game = games.getGame(hostId);
+      if (game) {
+        const listOfCurrentPlayers = players.getPlayers(hostId);
+        const sortedPlayers = listOfCurrentPlayers.sort(
+          (a, b) => b.gameData.score - a.gameData.score
+        );
+        io.to(hostId).emit("player-rankings", sortedPlayers);
+      }
+    }
   });
 
   socket.on("end-game-player", () => {
