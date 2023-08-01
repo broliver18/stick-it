@@ -285,6 +285,12 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("get-final-score", (playerId) => {
+    const player = players.getPlayer(playerId);
+    const finalScore = player.gameData.score;
+    socket.emit("player-final-score", finalScore);
+  })
+
   socket.on("end-game-player", () => {
     const player = players.getPlayer(socket.id);
 
