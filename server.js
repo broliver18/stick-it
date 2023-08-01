@@ -47,21 +47,34 @@ io.on("connection", (socket) => {
   socket.on("player-join", (displayName, pin) => {
     const pinInt = parseInt(pin);
     let gameFound = false;
+    let playersInGame;
+    let hostId;
+
     for (let i = 0; i < games.games.length; i++) {
       if (pinInt === games.games[i].pin) {
-        console.log("Player connected to game");
-        const hostId = games.games[i].hostId;
+        hostId = games.games[i].hostId;
+        playersInGame = players.getPlayers(hostId);
+        gameFound = true;
+        break;
+      }
+    }
+
+    if (gameFound === true) {
+      if (playersInGame.find((player) => player.name === displayName)) {
+        socket.emit("name-already-exists");
+        console.log("There's already a player with that name");
+      } else {
         players.addPlayer(hostId, socket.id, displayName, {
           score: 0,
           answer: 0,
         });
+        const updatedPlayersInGame = players.getPlayers(hostId);
         socket.join(pinInt);
-        const playersInGame = players.getPlayers(hostId);
-        io.to(pinInt).emit("update-player-lobby", playersInGame);
-        gameFound = true;
+        io.to(pinInt).emit("update-player-lobby", updatedPlayersInGame);
+        socket.emit("game-found-status", gameFound);
+        console.log("Player connected to game");
       }
     }
-    socket.emit("game-found-status", gameFound);
   });
 
   socket.on("quiz-info", (questions, quizDetails) => {
@@ -289,7 +302,7 @@ io.on("connection", (socket) => {
     const player = players.getPlayer(playerId);
     const finalScore = player.gameData.score;
     socket.emit("player-final-score", finalScore);
-  })
+  });
 
   socket.on("end-game-player", () => {
     const player = players.getPlayer(socket.id);
