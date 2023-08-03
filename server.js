@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const { Server } = require("socket.io");
 const http = require("http");
@@ -342,7 +344,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const dbURI = `mongodb+srv://brunoolive504:562412504$BMo@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
+const dbURI = `mongodb+srv://brunoolive504:${process.env.MONGODB_PASSWORD}@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
 mongoose
   .connect(dbURI, {
     useNewUrlParser: true,
