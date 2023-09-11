@@ -68,6 +68,7 @@ io.on("connection", (socket) => {
       if (playersInGame.find((player) => player.name === displayName)) {
         socket.emit("name-already-exists");
         console.log("There's already a player with that name");
+        return;
       } else {
         players.addPlayer(hostId, socket.id, displayName, {
           score: 0,
