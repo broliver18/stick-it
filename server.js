@@ -75,11 +75,11 @@ io.on("connection", (socket) => {
         });
         const updatedPlayersInGame = players.getPlayers(hostId);
         socket.join(pinInt);
-        io.to(pinInt).emit("update-player-lobby", updatedPlayersInGame);
-        socket.emit("game-found-status", gameFound);
+        io.to(pinInt).emit("update-player-lobby", updatedPlayersInGame); 
         console.log("Player connected to game");
       }
     }
+    socket.emit("game-found-status", gameFound);
   });
 
   socket.on("quiz-info", (questions, quizDetails) => {

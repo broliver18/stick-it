@@ -36,10 +36,10 @@ module.exports = (io, socket) => {
         const updatedPlayersInGame = players.getPlayers(hostId);
         socket.join(pinInt);
         io.to(pinInt).emit("update-player-lobby", updatedPlayersInGame);
-        socket.emit("game-found-status", gameFound);
         console.log("Player connected to game");
       }
     }
+    socket.emit("game-found-status", gameFound);
   };
 
   const playerJoinGame = (playerId) => {
