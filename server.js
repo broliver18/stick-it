@@ -303,13 +303,13 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("get-final-score", (playerId) => {
+  socket.on("get-player-final-score", (playerId) => {
     const player = players.getPlayer(playerId);
     const finalScore = player.gameData.score;
     socket.emit("player-final-score", finalScore);
   });
 
-  socket.on("end-game-player", () => {
+  socket.on("player-end-game", () => {
     const player = players.getPlayer(socket.id);
 
     if (player) {
@@ -324,7 +324,7 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("end-game-host", () => {
+  socket.on("host-end-game", () => {
     const game = games.getGame(socket.id);
     if (game) {
       if (game.gameLive === true) {
