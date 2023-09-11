@@ -20,7 +20,7 @@ const io = new Server(server, {
 const games = new Games();
 const players = new Players();
 
-const deleteQuiz = (id) =>
+const removeQuiz = (id) =>
   Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz));
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);
 const getQuiz = (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz);
@@ -109,7 +109,7 @@ io.on("connection", (socket) => {
     getAllQuizzes().then((quizzes) => socket.emit("get-all-quizzes", quizzes))
   );
 
-  socket.on("delete-quiz", (gameId) => deleteQuiz(gameId));
+  socket.on("delete-quiz", (gameId) => removeQuiz(gameId));
 
   socket.on("host-join", (gameId) => {
     const gamePin = Math.floor(Math.random() * 90000) + 10000;
@@ -183,7 +183,6 @@ io.on("connection", (socket) => {
 
   socket.on("player-disconnect", () => {
     const player = players.getPlayer(socket.id);
-
     if (player) {
       const hostId = player.hostId;
       const game = games.getGame(hostId);
