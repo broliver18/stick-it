@@ -1,4 +1,4 @@
-const Quiz = require("./models/quiz");
+const Quiz = require("../models/quiz");
 
 const getQuiz = (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz);
 const getAllQuizzes = () => Quiz.find().then((quizzesArray) => quizzesArray);

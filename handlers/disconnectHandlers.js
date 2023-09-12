@@ -1,8 +1,5 @@
-const { Games } = require("../utils/Games");
-const { Players } = require("../utils/Players");
-
-const games = new Games();
-const players = new Players();
+const games = require("../utils/Games");
+const players = require("../utils/Players");
 
 module.exports = (io, socket) => {
   const disconnect = () => {

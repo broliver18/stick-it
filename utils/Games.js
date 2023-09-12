@@ -20,4 +20,4 @@ class Games {
     }
 }
 
-module.exports = { Games };
+module.exports = new Games();
