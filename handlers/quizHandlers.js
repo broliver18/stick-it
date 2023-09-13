@@ -1,8 +1,4 @@
-const {
-  createQuiz,
-  getAllQuizzes,
-  removeQuiz,
-} = require("../utils/mongooseFunctions");
+const quizController = require("../utils/quizController");
 
 module.exports = (socket) => {
   const quizInfo = (questions, quizDetails) => {
@@ -23,15 +19,17 @@ module.exports = (socket) => {
       const errorMessage = "Please fill out all required input fields.";
       socket.emit("error-message", errorMessage);
     } else {
-      const createdQuiz = createQuiz(questions, quizDetails);
+      const createdQuiz = quizController.createQuiz(questions, quizDetails);
       createdQuiz.then((message) => socket.emit("create-quiz", message));
     }
   };
 
   const initializeQuizzes = () =>
-    getAllQuizzes().then((quizzes) => socket.emit("get-all-quizzes", quizzes));
+    quizController
+      .getAllQuizzes()
+      .then((quizzes) => socket.emit("get-all-quizzes", quizzes));
 
-  const deleteQuiz = (gameId) => removeQuiz(gameId);
+  const deleteQuiz = (gameId) => quizController.removeQuiz(gameId);
 
   socket.on("quiz-info", quizInfo);
   socket.on("initialize-quizzes", initializeQuizzes);

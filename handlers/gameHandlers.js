@@ -1,4 +1,4 @@
-const { getQuiz } = require("../utils/mongooseFunctions");
+const quizController = require("../utils/quizController");
 const games = require("../utils/Games");
 const players = require("../utils/Players");
 
@@ -21,7 +21,7 @@ module.exports = (io, socket) => {
       return;
     }
     const gameId = game.gameData.gameId;
-    getQuiz(gameId).then((quiz) => {
+    quizController.getQuiz(gameId).then((quiz) => {
       let questionData;
       const questions = quiz.questions;
       const questionInfo = questions[num];
