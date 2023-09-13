@@ -19,6 +19,10 @@ const questionSchema = new Schema({
 });
 
 const quizSchema = new Schema({
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  },
   quizName: {
     type: String,
     maxLength: 15,
