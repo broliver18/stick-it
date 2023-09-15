@@ -1,4 +1,4 @@
-const quizController = require("../utils/quizController");
+const quizController = require("../controllers/quizController");
 
 module.exports = (socket) => {
   const quizInfo = (questions, quizDetails) => {

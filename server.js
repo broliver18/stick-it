@@ -4,6 +4,7 @@ const express = require("express");
 const { Server } = require("socket.io");
 const http = require("http");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
@@ -13,6 +14,7 @@ const io = new Server(server, {
   },
 });
 
+const authRouter = require("./routes/authRouter");
 const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
@@ -26,6 +28,16 @@ const onConnection = (socket) => {
   registerDisconnectHandlers(io, socket);
   registerQuizHandlers(socket);
 };
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
+app.use(express.json());
+
+app.use("/auth", authRouter);
 
 io.on("connection", onConnection);
 

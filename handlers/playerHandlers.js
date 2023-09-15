@@ -1,4 +1,4 @@
-const quizController = require("../utils/quizController");
+const quizController = require("../controllers/quizController");
 const games = require("../utils/Games");
 const players = require("../utils/Players");
 
