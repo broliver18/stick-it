@@ -5,6 +5,7 @@ const { Server } = require("socket.io");
 const http = require("http");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const session = require("express-session");
 
 const app = express();
 const server = http.createServer(app);
@@ -36,6 +37,18 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(session({
+  secret: process.env.COOKIE_SECRET,
+  credentials: true,
+  name: "sid",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: process.env.ENVIRONMENT === "production" ? true : "auto",
+    sameSite: process.env.ENVIRONMENT === "production" ? "none" : "lax",
+  }
+}))
 
 app.use("/auth", authRouter);
 
