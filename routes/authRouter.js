@@ -7,11 +7,11 @@ const userController = require("../controllers/userController");
 
 const loginSchema = Yup.object({
   email: Yup.string().required("Email required").email("Invalid email address"),
-  password: Yup.string()
-    .required("Password required"),
+  password: Yup.string().required("Password required"),
 });
 
 const registerSchema = Yup.object({
+  name: Yup.string().required("Name requried"),
   email: Yup.string().required("Email required").email("Invalid email address"),
   password: Yup.string()
     .required("Password required")
@@ -31,19 +31,21 @@ router.post("/login", async (req, res) => {
       existingUser.password
     );
     if (isSamePass) {
+      req.session.authenticated = true;
       req.session.user = {
         id: existingUser._id,
+        name: existingUser.name,
         email: existingUser.email,
       };
       res.json({ loggedIn: true, username: req.body.email });
-      console.log("login was successful")
+      console.log("login was successful");
     } else {
       res.json({ loggedIn: false, status: "Wrong username or password" });
-      console.log("Login failed")
+      console.log("Login failed");
     }
   } else {
     res.json({ loggedIn: false, status: "Wrong username or password" });
-    console.log("Login failed")
+    console.log("Login failed");
   }
 });
 
@@ -53,21 +55,24 @@ router.post("/sign-up", async (req, res) => {
   const existingUser = await userController.getUser(req.body.email);
   if (existingUser) {
     res.json({ loggedIn: false, status: "Email already registered" });
-    console.log("email already registered")
+    console.log("email already registered");
   } else {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const newUser = await userController.createUser(
+      req.body.name,
       req.body.email,
       hashedPassword
     );
     if (newUser === "success") {
       const user = await userController.getUser(req.body.email);
+      req.session.authenticated = true;
       req.session.user = {
         id: user._id,
+        name: user.name,
         email: user.email,
       };
       res.json({ loggedIn: true, username: req.body.email });
-      console.log("signup was successful")
+      console.log("signup was successful");
     }
   }
 });

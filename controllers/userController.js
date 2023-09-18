@@ -2,9 +2,10 @@ const User = require("../models/user");
 
 const userController = {
   getUser: (email) => User.findOne({ email }).then((user) => user),
-  createUser: async (email, password) => {
+  createUser: async (name, email, password) => {
     try {
       const user = await User.create({
+        name,
         email,
         password,
       });

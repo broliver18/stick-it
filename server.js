@@ -1,4 +1,6 @@
-require("dotenv").config();
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+} 
 
 const express = require("express");
 const { Server } = require("socket.io");
@@ -44,9 +46,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
+    maxAge: 60 * 60 * 12,
     httpOnly: true,
-    secure: process.env.ENVIRONMENT === "production" ? true : "auto",
-    sameSite: process.env.ENVIRONMENT === "production" ? "none" : "lax",
+    secure: process.env.NODE_ENV === "production" ? true : "auto",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   }
 }))
 
