@@ -1,4 +1,4 @@
-const User = require("../models/user");
+const User = require("../../models/user");
 
 const userController = {
   getUser: (email) => User.findOne({ email }).then((user) => user),

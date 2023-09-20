@@ -1,4 +1,4 @@
-const Quiz = require("../models/quiz");
+const Quiz = require("../../models/quiz");
 
 const quizController = {
   getQuiz: (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz),
@@ -7,7 +7,7 @@ const quizController = {
 
   removeQuiz: (id) =>
     Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz)),
-    
+
   createQuiz: async (questions, quizDetails) => {
     const { quizName, minPoints, maxPoints } = quizDetails;
     try {
