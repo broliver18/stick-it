@@ -4,6 +4,7 @@ const Yup = require("yup");
 
 const validateForm = require("../controllers/validateForm");
 const { handleLogin, handleSignUp } = require("../controllers/authController");
+const { rateLimiter } = require("../controllers/rateLimiter");
 
 const loginSchema = Yup.object({
   email: Yup.string().required("Email required").email("Invalid email address"),
@@ -21,7 +22,7 @@ const signUpSchema = Yup.object({
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
-router.post("/sign-up", validateForm(signUpSchema), handleSignUp );
-router.post("/login", validateForm(loginSchema), handleLogin);
+router.post("/sign-up", validateForm(signUpSchema), rateLimiter, handleSignUp );
+router.post("/login", validateForm(loginSchema), rateLimiter, handleLogin);
 
 module.exports = router;

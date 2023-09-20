@@ -10,7 +10,7 @@ const cors = require("cors");
 const session = require("express-session");
 const Redis = require("ioredis");
 const RedisStore = require("connect-redis").default;
-const redisClient = new Redis();
+const redisClient = require("./redis");
 
 const app = express();
 const server = http.createServer(app);
