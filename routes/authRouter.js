@@ -21,33 +21,43 @@ const registerSchema = Yup.object({
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
-router.post("/login", async (req, res) => {
-  validateForm(req, res, loginSchema);
-
-  const existingUser = await userController.getUser(req.body.email);
-  if (existingUser) {
-    const isSamePass = await bcrypt.compare(
-      req.body.password,
-      existingUser.password
-    );
-    if (isSamePass) {
-      req.session.authenticated = true;
-      req.session.user = {
-        id: existingUser._id,
-        name: existingUser.name,
-        email: existingUser.email,
-      };
-      res.json({ loggedIn: true, username: req.body.email });
-      console.log("login was successful");
+router
+  .route("/login")
+  .get(async (req, res) => {
+    if (req.session.user && req.session.user.email) {
+      console.log("logged in");
+      res.json({ loggedIn: true, email: req.session.user.email })
     } else {
-      res.json({ loggedIn: false, status: "Wrong username or password" });
+      res.json({ loggedIn: false })
+    }
+  })
+  .post(async (req, res) => {
+    validateForm(req, res, loginSchema);
+
+    const existingUser = await userController.getUser(req.body.email);
+    if (existingUser) {
+      const isSamePass = await bcrypt.compare(
+        req.body.password,
+        existingUser.password
+      );
+      if (isSamePass) {
+        req.session.authenticated = true;
+        req.session.user = {
+          id: existingUser._id,
+          name: existingUser.name,
+          email: existingUser.email,
+        };
+        res.json({ loggedIn: true, username: req.body.email });
+        console.log("login was successful");
+      } else {
+        res.json({ loggedIn: false, status: "Your email or password is incorrect." });
+        console.log("Login failed");
+      }
+    } else {
+      res.json({ loggedIn: false, status: "Your email or password is incorrect." });
       console.log("Login failed");
     }
-  } else {
-    res.json({ loggedIn: false, status: "Wrong username or password" });
-    console.log("Login failed");
-  }
-});
+  });
 
 router.post("/sign-up", async (req, res) => {
   validateForm(req, res, registerSchema);
