@@ -8,6 +8,9 @@ const http = require("http");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const session = require("express-session");
+const Redis = require("ioredis");
+const RedisStore = require("connect-redis").default;
+const redisClient = new Redis();
 
 const app = express();
 const server = http.createServer(app);
@@ -24,14 +27,6 @@ const registerGameHandlers = require("./handlers/gameHandlers");
 const registerDisconnectHandlers = require("./handlers/disconnectHandlers");
 const registerQuizHandlers = require("./handlers/quizHandlers");
 
-const onConnection = (socket) => {
-  registerHostHandlers(io, socket);
-  registerPlayerHandlers(io, socket);
-  registerGameHandlers(io, socket);
-  registerDisconnectHandlers(io, socket);
-  registerQuizHandlers(socket);
-};
-
 app.use(
   cors({
     origin: "http://localhost:3000",
@@ -43,6 +38,7 @@ app.use(session({
   secret: process.env.COOKIE_SECRET,
   credentials: true,
   name: "sid",
+  store: new RedisStore({ client: redisClient }),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -54,6 +50,14 @@ app.use(session({
 }))
 
 app.use("/auth", authRouter);
+
+const onConnection = (socket) => {
+  registerHostHandlers(io, socket);
+  registerPlayerHandlers(io, socket);
+  registerGameHandlers(io, socket);
+  registerDisconnectHandlers(io, socket);
+  registerQuizHandlers(socket);
+};
 
 io.on("connection", onConnection);
 
