@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 const userController = require("../controllers/databaseControllers/userController");
 
-module.exports.handleSignUp = async (req, res) => {
+const handleSignUp = async (req, res) => {
   const existingUser = await userController.getUser(req.body.email);
   if (existingUser) {
     res.json({ loggedIn: false, status: "Email already registered" });
@@ -28,7 +28,7 @@ module.exports.handleSignUp = async (req, res) => {
   }
 };
 
-module.exports.handleLogin = async (req, res) => {
+const handleLogin = async (req, res) => {
   const existingUser = await userController.getUser(req.body.email);
   if (existingUser) {
     const isSamePass = await bcrypt.compare(
@@ -59,3 +59,5 @@ module.exports.handleLogin = async (req, res) => {
     console.log("Login failed");
   }
 };
+
+module.exports = { handleLogin, handleSignUp }
