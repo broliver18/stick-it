@@ -5,9 +5,10 @@ const { getAllQuizzes, getQuiz, createQuiz, deleteQuiz } = require("../controlle
 
 router.get("/quizzes", getAllQuizzes);
 
+router.get("quiz/:id", getQuiz);
+
 router
   .route("/quiz")
-  .get(getQuiz)
   .post(createQuiz)
   .delete(deleteQuiz);
 

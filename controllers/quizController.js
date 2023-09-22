@@ -10,7 +10,7 @@ const getAllQuizzes = (req, res) => {
 };
 
 const getQuiz = (req, res) => {
-  const { gameId } = req.body;
+  const gameId = req.params.id;
   quizQueries
     .getQuiz(gameId)
     .catch((error) => res.json(error))
@@ -36,9 +36,9 @@ const createQuiz = (req, res) => {
     const errorMessage = "Please fill out all required input fields.";
     res.json(errorMessage);
   } else {
-    const userId = req.session.user.id;
+    const user = req.session.user;
     quizQueries
-      .createQuiz(userId, quizDetails, questions)
+      .createQuiz(user, quizDetails, questions)
       .catch((error) => res.json(error))
       .then((message) => res.json(message));
   }
