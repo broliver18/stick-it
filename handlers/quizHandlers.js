@@ -1,4 +1,4 @@
-const quizController = require("../controllers/databaseControllers/quizController");
+const quizQueries = require("../database/quizQueries");
 
 module.exports = (socket) => {
   const quizInfo = (questions, quizDetails) => {
@@ -19,17 +19,17 @@ module.exports = (socket) => {
       const errorMessage = "Please fill out all required input fields.";
       socket.emit("error-message", errorMessage);
     } else {
-      const createdQuiz = quizController.createQuiz(questions, quizDetails);
+      const createdQuiz = quizQueries.createQuiz(questions, quizDetails);
       createdQuiz.then((message) => socket.emit("create-quiz", message));
     }
   };
 
   const initializeQuizzes = () =>
-    quizController
+    quizQueries
       .getAllQuizzes()
       .then((quizzes) => socket.emit("get-all-quizzes", quizzes));
 
-  const deleteQuiz = (gameId) => quizController.removeQuiz(gameId);
+  const deleteQuiz = (gameId) => quizQueries.removeQuiz(gameId);
 
   socket.on("quiz-info", quizInfo);
   socket.on("initialize-quizzes", initializeQuizzes);

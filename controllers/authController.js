@@ -1,21 +1,21 @@
 const bcrypt = require("bcrypt");
 
-const userController = require("../controllers/databaseControllers/userController");
+const userQueries = require("../database/userQueries");
 
 const handleSignUp = async (req, res) => {
-  const existingUser = await userController.getUser(req.body.email);
+  const existingUser = await userQueries.getUser(req.body.email);
   if (existingUser) {
     res.json({ loggedIn: false, status: "Email already registered" });
     console.log("email already registered");
   } else {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const newUser = await userController.createUser(
+    const newUser = await userQueries.createUser(
       req.body.name,
       req.body.email,
       hashedPassword
     );
     if (newUser === "success") {
-      const user = await userController.getUser(req.body.email);
+      const user = await userQueries.getUser(req.body.email);
       req.session.authenticated = true;
       req.session.user = {
         id: user._id,
@@ -29,7 +29,7 @@ const handleSignUp = async (req, res) => {
 };
 
 const handleLogin = async (req, res) => {
-  const existingUser = await userController.getUser(req.body.email);
+  const existingUser = await userQueries.getUser(req.body.email);
   if (existingUser) {
     const isSamePass = await bcrypt.compare(
       req.body.password,
@@ -60,4 +60,4 @@ const handleLogin = async (req, res) => {
   }
 };
 
-module.exports = { handleLogin, handleSignUp }
+module.exports = { handleLogin, handleSignUp };

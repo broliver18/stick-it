@@ -1,4 +1,4 @@
-const quizController = require("../controllers/databaseControllers/quizController");
+const quizQueries = require("../database/quizQueries");
 const games = require("../utils/Games");
 const players = require("../utils/Players");
 
@@ -21,7 +21,7 @@ module.exports = (io, socket) => {
     const game = games.getGame(hostId);
     if (game) {
       const gameId = game.gameData.gameId;
-      quizController
+      quizQueries
         .getQuiz(gameId)
         .then((quiz) => socket.emit("get-quiz-title", quiz.quizName));
       io.to(game.pin).emit("game-started-player");

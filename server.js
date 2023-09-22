@@ -27,6 +27,7 @@ const registerQuizHandlers = require("./handlers/quizHandlers");
 
 app.use(cors(corsConfig));
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
 
 app.use("/auth", authRouter);

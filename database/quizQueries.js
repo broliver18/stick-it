@@ -1,6 +1,6 @@
-const Quiz = require("../../models/quiz");
+const Quiz = require("../models/quiz");
 
-const quizController = {
+const quizQueries = {
   getQuiz: (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz),
 
   getAllQuizzes: () => Quiz.find().then((quizzesArray) => quizzesArray),
@@ -8,7 +8,7 @@ const quizController = {
   removeQuiz: (id) =>
     Quiz.deleteOne({ _id: id }).then((quiz) => console.log(quiz)),
 
-  createQuiz: async (questions, quizDetails) => {
+  createQuiz: async (user, quizDetails, questions) => {
     const { quizName, minPoints, maxPoints } = quizDetails;
     try {
       const existingQuiz = await Quiz.findOne({ quizName });
@@ -16,6 +16,7 @@ const quizController = {
         return "A quiz with this name already exists.";
       } else {
         const quiz = await Quiz.create({
+          user,
           quizName,
           minPoints,
           maxPoints,
@@ -29,4 +30,4 @@ const quizController = {
   },
 };
 
-module.exports = quizController;
+module.exports = quizQueries;

@@ -21,22 +21,22 @@ const questionSchema = new Schema({
 const quizSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
-    ref: "User"
+    ref: "User",   
   },
   quizName: {
     type: String,
-    maxLength: 15,
     required: true,
+    maxLength: 15,
   },
   minPoints: {
     type: Number,
-    min: -1000,
     required: true,
+    min: -1000,
   },
   maxPoints: {
     type: Number,
-    max: 1000,
     required: true,
+    max: 1000,
   },
   questions: [questionSchema],
 });

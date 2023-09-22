@@ -1,7 +1,10 @@
-const User = require("../../models/user");
+const User = require("../models/user");
 
-const userController = {
+const userQueries = {
   getUser: (email) => User.findOne({ email }).then((user) => user),
+
+  getUserQuizzes: (email) => User.findOne({ email }).populate("quizzes").then((user) => user.quizzes),
+
   createUser: async (name, email, password) => {
     try {
       const user = await User.create({
@@ -16,4 +19,4 @@ const userController = {
   },
 };
 
-module.exports = userController;
+module.exports = userQueries;
