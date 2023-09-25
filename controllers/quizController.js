@@ -11,9 +11,9 @@ const getAllQuizzes = (req, res) => {
 };
 
 const getQuiz = (req, res) => {
-  const gameId = req.params.id;
+  const quizId = req.params.id;
   quizQueries
-    .getQuiz(gameId)
+    .getQuiz(quizId)
     .catch((error) => res.json(error))
     .then((quiz) => res.json(quiz));
 };
@@ -46,10 +46,10 @@ const createQuiz = (req, res) => {
 };
 
 const deleteQuiz = (req, res) => {
-  const { gameId } = req.body;
+  const { quizId } = req.body;
   const userEmail = req.session.user.email;
-  quizQueries.removeQuiz(gameId).catch((error) => res.json(error));
-  userQueries.removeUserQuiz(userEmail, gameId);
+  quizQueries.removeQuiz(quizId).catch((error) => res.json(error));
+  userQueries.removeUserQuiz(userEmail, quizId);
 };
 
 module.exports = { getAllQuizzes, getQuiz, createQuiz, deleteQuiz };

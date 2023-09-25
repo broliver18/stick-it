@@ -2,7 +2,7 @@ const Quiz = require("../models/quiz");
 const userQueries = require("../database/userQueries");
 
 const quizQueries = {
-  getQuiz: (gameId) => Quiz.findOne({ _id: gameId }).then((quiz) => quiz),
+  getQuiz: (id) => Quiz.findOne({ _id: id }).then((quiz) => quiz),
 
   getAllQuizzes: () => Quiz.find().then((quizzesArray) => quizzesArray),
 

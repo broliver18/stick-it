@@ -20,9 +20,9 @@ module.exports = (io, socket) => {
   const hostJoinGame = (hostId) => {
     const game = games.getGame(hostId);
     if (game) {
-      const gameId = game.gameData.gameId;
+      const quizId = game.gameData.gameId;
       quizQueries
-        .getQuiz(gameId)
+        .getQuiz(quizId)
         .then((quiz) => socket.emit("get-quiz-title", quiz.quizName));
       io.to(game.pin).emit("game-started-player");
       game.gameData.questionsLive = true;

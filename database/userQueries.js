@@ -12,8 +12,8 @@ const userQueries = {
     User.updateOne(
       { email },
       {
-        $pull: {
-          quizzes: { _id: id },
+        "$pull": {
+          "quizzes": id,
         },
       }
     ).then((status) => console.log(status));
