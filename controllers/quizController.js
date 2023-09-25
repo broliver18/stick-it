@@ -2,7 +2,6 @@ const quizQueries = require("../database/quizQueries");
 const userQueries = require("../database/userQueries");
 
 const getAllQuizzes = (req, res) => {
-  console.log(req.session)
   const userEmail = req.session.user.email;
   userQueries
     .getUserQuizzes(userEmail)
