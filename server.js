@@ -19,6 +19,7 @@ const io = new Server(server, {
 });
 
 const authRouter = require("./routes/authRouter");
+const quizRouter = require("./routes/quizRouter");
 const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
 
 app.use("/auth", authRouter);
+app.use("/profile", quizRouter);
 
 const onConnection = (socket) => {
   registerHostHandlers(io, socket);

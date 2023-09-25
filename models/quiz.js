@@ -21,6 +21,7 @@ const questionSchema = new Schema({
 const quizSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
+    required: true,
     ref: "User",   
   },
   quizName: {
@@ -40,5 +41,7 @@ const quizSchema = new Schema({
   },
   questions: [questionSchema],
 });
+
+quizSchema.set("timestamps", true);
 
 module.exports = mongoose.model("Quiz", quizSchema);

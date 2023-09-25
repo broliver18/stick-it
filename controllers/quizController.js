@@ -2,6 +2,7 @@ const quizQueries = require("../database/quizQueries");
 const userQueries = require("../database/userQueries");
 
 const getAllQuizzes = (req, res) => {
+  console.log(req.session)
   const userEmail = req.session.user.email;
   userQueries
     .getUserQuizzes(userEmail)
@@ -46,7 +47,9 @@ const createQuiz = (req, res) => {
 
 const deleteQuiz = (req, res) => {
   const { gameId } = req.body;
+  const userEmail = req.session.user.email;
   quizQueries.removeQuiz(gameId).catch((error) => res.json(error));
+  userQueries.removeUserQuiz(userEmail, gameId);
 };
 
 module.exports = { getAllQuizzes, getQuiz, createQuiz, deleteQuiz };

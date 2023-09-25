@@ -5,7 +5,7 @@ const userQueries = require("../database/userQueries");
 const handleSignUp = async (req, res) => {
   const existingUser = await userQueries.getUser(req.body.email);
   if (existingUser) {
-    res.json({ loggedIn: false, status: "Email already registered" });
+    res.json({ loggedIn: false, status: "This email is already registered." });
     console.log("email already registered");
   } else {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);

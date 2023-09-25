@@ -59,7 +59,7 @@ module.exports = (io, socket) => {
     }
   };
 
-  const playerEndGame = () => {
+  const playerLeaveGame = () => {
     const player = players.getPlayer(socket.id);
 
     if (player) {
@@ -76,5 +76,5 @@ module.exports = (io, socket) => {
 
   socket.on("player-join", playerJoin);
   socket.on("player-join-game", playerJoinGame);
-  socket.on("player-end-game", playerEndGame);
+  socket.on("player-leave-game", playerLeaveGame);
 };
