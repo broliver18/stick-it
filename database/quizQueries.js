@@ -4,8 +4,6 @@ const userQueries = require("../database/userQueries");
 const quizQueries = {
   getQuiz: (id) => Quiz.findOne({ _id: id }).then((quiz) => quiz),
 
-  getAllQuizzes: () => Quiz.find().then((quizzesArray) => quizzesArray),
-
   removeQuiz: (id) =>
     Quiz.deleteOne({ _id: id }).then((status) => console.log(status)),
 

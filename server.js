@@ -24,7 +24,6 @@ const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
 const registerDisconnectHandlers = require("./handlers/disconnectHandlers");
-const registerQuizHandlers = require("./handlers/quizHandlers");
 
 app.use(cors(corsConfig));
 app.use(express.json());
@@ -39,7 +38,6 @@ const onConnection = (socket) => {
   registerPlayerHandlers(io, socket);
   registerGameHandlers(io, socket);
   registerDisconnectHandlers(io, socket);
-  registerQuizHandlers(socket);
 };
 
 io.engine.use(sessionMiddleware);

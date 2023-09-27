@@ -3,7 +3,7 @@ const players = require("../utils/Players");
 
 module.exports = (io, socket) => {
   const disconnect = (reason) => {
-    console.log(`Disconnect due to ${reason}`);
+    console.log(`Disconnect: ${reason}`);
     const game = games.getGame(socket.id);
     if (game) {
       games.removeGame(socket.id);
