@@ -15,14 +15,14 @@ const handleSignUp = async (req, res) => {
       hashedPassword
     );
     if (newUser === "success") {
-      const user = await userQueries.getUser(req.body.email);
+      const user = await userQueries.getUser(req.body.name);
       req.session.authenticated = true;
       req.session.user = {
         id: user._id,
         name: user.name,
         email: user.email,
       };
-      res.json({ loggedIn: true, username: req.body.email });
+      res.json({ loggedIn: true, username: req.body.name });
       console.log("signup was successful");
     }
   }
@@ -42,7 +42,7 @@ const handleLogin = async (req, res) => {
         name: existingUser.name,
         email: existingUser.email,
       };
-      res.json({ loggedIn: true, username: req.body.email });
+      res.json({ loggedIn: true, username: req.session.user.name });
       console.log("login was successful");
     } else {
       res.json({
