@@ -17,6 +17,19 @@ const getQuiz = (req, res) => {
     .then((quiz) => res.json(quiz));
 };
 
+const modifyQuiz = async (req, res) => {
+  const quizId = req.params.id;
+  const { quizDetails, questions } = req.body;
+  const { quizName, minPoints, maxPoints } = quizDetails;
+  const currentQuiz = await quizQueries.getQuiz(quizId);
+  currentQuiz.quizName = quizName;
+  currentQuiz.minPoints = minPoints;
+  currentQuiz.maxPoints = maxPoints;
+  currentQuiz.questions = questions;
+  await currentQuiz.save();
+  res.json("success");
+};
+
 const createQuiz = (req, res) => {
   const { quizDetails, questions } = req.body;
   if (
@@ -51,4 +64,4 @@ const deleteQuiz = (req, res) => {
   userQueries.removeUserQuiz(userEmail, quizId);
 };
 
-module.exports = { getAllQuizzes, getQuiz, createQuiz, deleteQuiz };
+module.exports = { getAllQuizzes, getQuiz, modifyQuiz, createQuiz, deleteQuiz };
