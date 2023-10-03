@@ -1,6 +1,8 @@
 const User = require("../models/user");
 
 const userQueries = {
+  getUserById: (id) => User.findOne({ _id: id }).then((user) => user),
+
   getUser: (email) => User.findOne({ email }).then((user) => user),
 
   getUserQuizzes: (email) =>
