@@ -32,6 +32,12 @@ const handleLogout = (req, res, next) => {
     console.log("logout was successful")
     res.json("success");
   });
-}
+};
 
-module.exports = { handleSignUp, handleLogin, handleLogout };
+const checkAuthentication = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  };
+};
+
+module.exports = { handleSignUp, handleLogin, handleLogout, checkAuthentication };

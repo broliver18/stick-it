@@ -21,7 +21,8 @@ const io = new Server(server, {
 
 const authRouter = require("./routes/authRouter");
 const quizRouter = require("./routes/quizRouter");
-const initializePassport = require("./passport-config");
+const userQueries = require("./database/userQueries");
+const initializePassport = require("./passport/passport-local");
 const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
@@ -32,9 +33,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
 
-initializePassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  const user = await userQueries.getUserById(id);
+  return done(null, user);
+});
+initializePassport(passport);
 
 app.use("/auth", authRouter);
 app.use("/profile", quizRouter);
