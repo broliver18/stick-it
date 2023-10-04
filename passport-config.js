@@ -7,7 +7,7 @@ function initialize(passport) {
     const user = await userQueries.getUser(email);
     if (!user) {
       return done(null, false, {
-        message: "Your email or password is incorrect",
+        message: "The email or password is incorrect",
       });
     }
 
@@ -16,7 +16,7 @@ function initialize(passport) {
         return done(null, user);
       } else {
         return done(null, false, {
-          message: "Your email or password is incorrect",
+          message: "The email or password is incorrect",
         });
       }
     } catch (e) {

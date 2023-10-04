@@ -3,6 +3,7 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const express = require("express");
+const passport = require("passport");
 const { Server } = require("socket.io");
 const http = require("http");
 const mongoose = require("mongoose");
@@ -20,6 +21,7 @@ const io = new Server(server, {
 
 const authRouter = require("./routes/authRouter");
 const quizRouter = require("./routes/quizRouter");
+const initializePassport = require("./passport-config");
 const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
@@ -29,6 +31,10 @@ app.use(cors(corsConfig));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
+
+initializePassport(passport);
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/auth", authRouter);
 app.use("/profile", quizRouter);

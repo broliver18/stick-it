@@ -1,4 +1,5 @@
 const express = require("express");
+const passport = require("passport");
 const router = express.Router();
 const Yup = require("yup");
 
@@ -22,7 +23,7 @@ const signUpSchema = Yup.object({
     .oneOf([Yup.ref("password"), null], "Passwords must match"),
 });
 
-router.post("/sign-up", validateForm(signUpSchema), rateLimiter, handleSignUp );
-router.post("/login", validateForm(loginSchema), rateLimiter, handleLogin);
+router.post("/sign-up", validateForm(signUpSchema), rateLimiter, handleSignUp, passport.authenticate("local"), handleLogin);
+router.post("/login", validateForm(loginSchema), rateLimiter, passport.authenticate("local"), handleLogin,);
 
 module.exports = router;

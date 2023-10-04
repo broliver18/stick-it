@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 
 const userQueries = require("../database/userQueries");
 
-const handleSignUp = async (req, res) => {
+const handleSignUp = async (req, res, next) => {
   const existingUser = await userQueries.getUser(req.body.email);
   if (existingUser) {
     res.json({ loggedIn: false, status: "This email is already registered." });
@@ -15,51 +15,15 @@ const handleSignUp = async (req, res) => {
       hashedPassword
     );
     if (newUser === "success") {
-      const user = await userQueries.getUser(req.body.email);
-      req.session.authenticated = true;
-      req.session.user = {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      };
-      const names = req.body.name.split(" ");
-      res.json({ loggedIn: true, username: names[0] });
-      console.log("signup was successful");
+      return next();
     }
   }
 };
 
 const handleLogin = async (req, res) => {
-  const existingUser = await userQueries.getUser(req.body.email);
-  if (existingUser) {
-    const isSamePass = await bcrypt.compare(
-      req.body.password,
-      existingUser.password
-    );
-    if (isSamePass) {
-      req.session.authenticated = true;
-      req.session.user = {
-        id: existingUser._id,
-        name: existingUser.name,
-        email: existingUser.email,
-      };
-      const names = req.session.user.name.split(" ");
-      res.json({ loggedIn: true, username: names[0] });
-      console.log("login was successful");
-    } else {
-      res.json({
-        loggedIn: false,
-        status: "Your email or password is incorrect.",
-      });
-      console.log("Login failed");
-    }
-  } else {
-    res.json({
-      loggedIn: false,
-      status: "Your email or password is incorrect.",
-    });
-    console.log("Login failed");
-  }
+  const names = req.user.name.split(" ");
+  res.json({ loggedIn: true, username: names[0] });
+  console.log("login was successful");
 };
 
 module.exports = { handleLogin, handleSignUp };

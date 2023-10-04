@@ -2,7 +2,7 @@ const quizQueries = require("../database/quizQueries");
 const userQueries = require("../database/userQueries");
 
 const getAllQuizzes = (req, res) => {
-  const userEmail = req.session.user.email;
+  const userEmail = req.user.email;
   userQueries
     .getUserQuizzes(userEmail)
     .catch((error) => res.json(error))
@@ -49,7 +49,7 @@ const createQuiz = (req, res) => {
     const errorMessage = "Please fill out all required input fields.";
     res.json(errorMessage);
   } else {
-    const user = req.session.user;
+    const user = req.user;
     quizQueries
       .createQuiz(user, quizDetails, questions)
       .catch((error) => res.json(error))
@@ -59,7 +59,7 @@ const createQuiz = (req, res) => {
 
 const deleteQuiz = (req, res) => {
   const { quizId } = req.body;
-  const userEmail = req.session.user.email;
+  const userEmail = req.user.email;
   quizQueries.removeQuiz(quizId).catch((error) => res.json(error));
   userQueries.removeUserQuiz(userEmail, quizId);
 };
