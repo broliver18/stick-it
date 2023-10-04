@@ -22,7 +22,8 @@ const io = new Server(server, {
 const authRouter = require("./routes/authRouter");
 const quizRouter = require("./routes/quizRouter");
 const userQueries = require("./database/userQueries");
-const initializePassport = require("./passport/passport-local");
+const initializePassportLocal = require("./passport/passport-local");
+const initializePassportGoogle = require("./passport/passport-google");
 const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
@@ -40,7 +41,8 @@ passport.deserializeUser(async (id, done) => {
   const user = await userQueries.getUserById(id);
   return done(null, user);
 });
-initializePassport(passport);
+initializePassportLocal(passport);
+initializePassportGoogle(passport);
 
 app.use("/auth", authRouter);
 app.use("/profile", quizRouter);
