@@ -29,6 +29,7 @@ const handleLogin = (req, res) => {
 const handleLogout = (req, res, next) => {
   req.logout((error) => {
     if (error) { return next(error); }
+    console.log("logout was successful")
     res.json("success");
   });
 }
