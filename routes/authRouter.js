@@ -4,7 +4,7 @@ const router = express.Router();
 const Yup = require("yup");
 
 const validateForm = require("../controllers/validateForm");
-const { handleLogin, handleSignUp } = require("../controllers/authController");
+const { handleSignUp, handleLogin, handleLogout } = require("../controllers/authController");
 const { rateLimiter } = require("../controllers/rateLimiter");
 
 const loginSchema = Yup.object({
@@ -25,5 +25,6 @@ const signUpSchema = Yup.object({
 
 router.post("/sign-up", validateForm(signUpSchema), rateLimiter, handleSignUp, passport.authenticate("local"), handleLogin);
 router.post("/login", validateForm(loginSchema), rateLimiter, passport.authenticate("local"), handleLogin,);
+router.get("/logout", handleLogout);
 
 module.exports = router;

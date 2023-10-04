@@ -9,21 +9,28 @@ const handleSignUp = async (req, res, next) => {
     console.log("email already registered");
   } else {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const newUser = await userQueries.createUser(
+    const newUserStatus = await userQueries.createUser(
       req.body.name,
       req.body.email,
       hashedPassword
     );
-    if (newUser === "success") {
+    if (newUserStatus === "success") {
       return next();
     }
   }
 };
 
-const handleLogin = async (req, res) => {
+const handleLogin = (req, res) => {
   const names = req.user.name.split(" ");
   res.json({ loggedIn: true, username: names[0] });
   console.log("login was successful");
 };
 
-module.exports = { handleLogin, handleSignUp };
+const handleLogout = (req, res, next) => {
+  req.logout((error) => {
+    if (error) { return next(error); }
+    res.json("success");
+  });
+}
+
+module.exports = { handleSignUp, handleLogin, handleLogout };
