@@ -11,16 +11,16 @@ function initialize(passport) {
   const googleClientInfo = {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:4000/auth/google/callback",
+    callbackURL: "http://localhost:4000/auth/google/redirect",
   };
 
   const passportCallback = async (
     accessToken,
     refreshToken,
     profile,
-    email,
     done
   ) => {
+    const email = profile.emails[0].value;
     const existingUser = await userQueries.getUser(email);
     if (existingUser) {
       console.log(`user: ${existingUser.name} successfully retrieved`);

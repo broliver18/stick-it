@@ -26,7 +26,7 @@ const signUpSchema = Yup.object({
 router.post("/sign-up", validateForm(signUpSchema), rateLimiter, handleSignUp, passport.authenticate("local"), handleLogin);
 router.post("/login", validateForm(loginSchema), rateLimiter, passport.authenticate("local"), handleLogin,);
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback", passport.authenticate("google"), handleLogin);
+router.get("/google/redirect", passport.authenticate("google"), handleLogin);
 router.get("/logout", handleLogout);
 
 module.exports = router;
