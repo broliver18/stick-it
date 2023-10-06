@@ -28,16 +28,38 @@ const handleLogin = (req, res) => {
 
 const handleLogout = (req, res, next) => {
   req.logout((error) => {
-    if (error) { return next(error); }
-    console.log("logout was successful")
+    if (error) {
+      return next(error);
+    }
+    console.log("logout was successful");
     res.json("success");
   });
+};
+
+const handleLoginFailure = (req, res) => {
+  res.status(401).json("User failed to authenticate.");
+};
+
+const checkLogin = (req, res) => {
+  if (req.user) {
+    const names = req.user.name.split(" ");
+    res.json({ loggedIn: true, username: names[0] });
+  } else {
+    res.json("not logged in");
+  }
 };
 
 const checkAuthentication = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
-  };
+  }
 };
 
-module.exports = { handleSignUp, handleLogin, handleLogout, checkAuthentication };
+module.exports = {
+  handleSignUp,
+  handleLogin,
+  handleLogout,
+  handleLoginFailure,
+  checkLogin,
+  checkAuthentication,
+};

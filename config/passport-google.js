@@ -21,12 +21,13 @@ function initialize(passport) {
     done
   ) => {
     const email = profile.emails[0].value;
-    const existingUser = await userQueries.getUser(email);
+    const existingUser = await User.findOne({ googleId: profile.id })
     if (existingUser) {
       console.log(`user: ${existingUser.name} successfully retrieved`);
       done(null, existingUser);
     } else {
       new User({
+        googleId: profile.id,
         name: profile.displayName,
         email,
       })
