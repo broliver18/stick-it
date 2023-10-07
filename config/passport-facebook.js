@@ -2,20 +2,21 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const FacebookStrategy = require("passport-facebook").Strategy;
 
 const User = require("../models/user");
 
 function initialize(passport) {
-  const googleClientInfo = {
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "http://localhost:4000/auth/google/redirect",
+  const facebookClientInfo = {
+    clientID: process.env.FACEBOOK_CLIENT_ID,
+    clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+    callbackURL: "http://localhost:4000/auth/facebook/redirect",
+    profileFields: ["displayName", "email"],
   };
 
   const passportCallback = async (accessToken, refreshToken, profile, done) => {
     const email = profile.emails[0].value;
-    const existingUser = await User.findOne({ googleId: profile.id });
+    const existingUser = await User.findOne({ facebookId: profile.id });
     if (existingUser) {
       console.log(`user: ${existingUser.name} successfully retrieved`);
       done(null, existingUser);
@@ -25,20 +26,20 @@ function initialize(passport) {
         return done(null, false);
       } else {
         new User({
+          facebookId: profile.id,
           name: profile.displayName,
-          googleId: profile.id,
           email,
         })
           .save()
           .then((newUser) => {
-            console.log("New user created using Google OAuth 2.0");
+            console.log("New user created using Facebook OAuth 2.0");
             done(null, newUser);
           });
       }
     }
   };
 
-  passport.use(new GoogleStrategy(googleClientInfo, passportCallback));
+  passport.use(new FacebookStrategy(facebookClientInfo, passportCallback));
 }
 
 module.exports = initialize;

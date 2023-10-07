@@ -2,10 +2,10 @@ const quizQueries = require("../database/quizQueries");
 const userQueries = require("../database/userQueries");
 
 const getAllQuizzes = (req, res) => {
-  const userEmail = req.user.email;
+  const userId = req.user._id;
   const names = req.user.name.split(" ");
   userQueries
-    .getUserQuizzes(userEmail)
+    .getUserQuizzes(userId)
     .catch((error) => res.json(error))
     .then((quizzes) =>
       res.json({

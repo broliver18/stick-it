@@ -24,6 +24,7 @@ const quizRouter = require("./routes/quizRouter");
 const userQueries = require("./database/userQueries");
 const initializePassportLocal = require("./config/passport-local");
 const initializePassportGoogle = require("./config/passport-google");
+const initializePassportFacebook = require("./config/passport-facebook");
 const registerHostHandlers = require("./handlers/hostHandlers");
 const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
@@ -43,6 +44,7 @@ passport.deserializeUser(async (id, done) => {
 });
 initializePassportLocal(passport);
 initializePassportGoogle(passport);
+initializePassportFacebook(passport);
 
 app.use("/auth", authRouter);
 app.use("/profile", quizRouter);

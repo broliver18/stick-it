@@ -4,6 +4,7 @@ const router = express.Router();
 const Yup = require("yup");
 
 const CLIENT_LOGIN_PAGE_URL = "http://localhost:3000/host";
+const SERVER_LOGIN_FAILURE = "http://localhost:4000/auth/login/failed";
 
 const validateForm = require("../controllers/validateForm");
 const {
@@ -56,11 +57,22 @@ router.get(
   "/google/redirect",
   passport.authenticate("google", {
     successRedirect: CLIENT_LOGIN_PAGE_URL,
-    failureRedirect: "/login/failed",
+    failureRedirect: SERVER_LOGIN_FAILURE,
   }),
   handleLogin
 );
+router.get(
+  "/facebook",
+  passport.authenticate("facebook", { authType: 'reauthenticate', scope: ["public_profile", "email"] })
+);
+router.get(
+  "/facebook/redirect",
+  passport.authenticate("facebook", {
+    successRedirect: CLIENT_LOGIN_PAGE_URL,
+    failureRedirect: SERVER_LOGIN_FAILURE,
+  })
+);
 router.get("/logout", handleLogout);
-router.get("/login/failed", handleLoginFailure)
+router.get("/login/failed", handleLoginFailure);
 
 module.exports = router;

@@ -5,8 +5,8 @@ const userQueries = {
 
   getUser: (email) => User.findOne({ email }).then((user) => user),
 
-  getUserQuizzes: (email) =>
-    User.findOne({ email })
+  getUserQuizzes: (id) =>
+    User.findOne({ _id: id })
       .populate("quizzes")
       .then((user) => user.quizzes),
 
