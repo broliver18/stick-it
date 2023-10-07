@@ -19,6 +19,11 @@ const userSchema = new Schema({
   password: {
     type: String,
   },
+  previousPasswords: [
+    {
+      type: String,
+    }
+  ],
   quizzes: [
     {
       type: Schema.Types.ObjectId,

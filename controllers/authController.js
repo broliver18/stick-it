@@ -37,7 +37,11 @@ const handleLogout = (req, res, next) => {
 };
 
 const handleLoginFailure = (req, res) => {
-  res.status(401).send("Authentication failed: It looks like you already created in account with the same email address using a different sign-up method.");
+  res
+    .status(401)
+    .send(
+      "Authentication failed: It looks like you already created in account with the same email address using a different sign-up method."
+    );
 };
 
 const checkLogin = (req, res) => {
@@ -46,6 +50,56 @@ const checkLogin = (req, res) => {
     res.json({ loggedIn: true, username: names[0] });
   } else {
     res.json("not logged in");
+  }
+};
+
+const passwordResetCodeGenerator = () =>
+  Math.floor(Math.random() * 90000) + 10000;
+
+const sendResetCode = async (req, res) => {
+  const userEmail = req.body.email;
+  const user = await userQueries.getUser(userEmail);
+  if (!user || !user.password) {
+    return;
+  }
+  const resetCode = passwordResetCodeGenerator();
+  console.log(resetCode);
+  req.session.resetCodeInfo = {
+    userEmail,
+    resetCode,
+  };
+  setTimeout(() => {
+    req.session.resetCodeInfo = null;
+  }, 1000 * 60 * 5);
+};
+
+const checkResetCode = (req, res) => {
+  if (!req.session.resetCodeInfo) {
+    res.json("time expired");
+  } else {
+    if (req.body.resetCode === req.session.resetCodeInfo.resetCode) {
+      res.json("code matches");
+    } else {
+      res.json("code does not match");
+    }
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { resetCodeInfo } = req.session;
+  const { userEmail } = resetCodeInfo;
+  const newPassword = req.body.newPassword;
+  const user = await userQueries.getUser(userEmail);
+  if (
+    newPassword === user.password ||
+    user.previousPasswords.find((oldPassword) => oldPassword === newPassword)
+  ) {
+    res.json("password is equal to previous password");
+  } else {
+    user.previousPasswords.push(user.password);
+    user.password = newPassword;
+    await user.save()
+    res.json("success");
   }
 };
 
