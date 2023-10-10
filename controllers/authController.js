@@ -36,14 +36,6 @@ const handleLogout = (req, res, next) => {
   });
 };
 
-const handleLoginFailure = (req, res) => {
-  res
-    .status(401)
-    .send(
-      "Authentication failed: It looks like you already created in account with the same email address using a different sign-up method."
-    );
-};
-
 const checkLogin = (req, res) => {
   if (req.user) {
     const names = req.user.name.split(" ");
@@ -113,7 +105,6 @@ module.exports = {
   handleSignUp,
   handleLogin,
   handleLogout,
-  handleLoginFailure,
   checkLogin,
   checkAuthentication,
 };

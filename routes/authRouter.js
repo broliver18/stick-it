@@ -4,14 +4,13 @@ const router = express.Router();
 const Yup = require("yup");
 
 const CLIENT_LOGIN_PAGE_URL = "http://localhost:3000/host";
-const SERVER_LOGIN_FAILURE = "http://localhost:4000/auth/login/failed";
+const SERVER_LOGIN_FAILURE = "http://localhost:3000/login";
 
 const validateForm = require("../controllers/validateForm");
 const {
   handleSignUp,
   handleLogin,
   handleLogout,
-  handleLoginFailure,
   checkLogin,
 } = require("../controllers/authController");
 const { rateLimiter } = require("../controllers/rateLimiter");
@@ -73,6 +72,5 @@ router.get(
   })
 );
 router.get("/logout", handleLogout);
-router.get("/login/failed", handleLoginFailure);
 
 module.exports = router;
