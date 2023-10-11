@@ -1,10 +1,11 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const Yup = require("yup");
-
-const CLIENT_LOGIN_PAGE_URL = "http://localhost:3000/host";
-const SERVER_LOGIN_FAILURE = "http://localhost:3000/login";
 
 const validateForm = require("../controllers/validateForm");
 const {
@@ -55,8 +56,8 @@ router.get(
 router.get(
   "/google/redirect",
   passport.authenticate("google", {
-    successRedirect: CLIENT_LOGIN_PAGE_URL,
-    failureRedirect: SERVER_LOGIN_FAILURE,
+    successRedirect: process.env.CLIENT_LOGIN_SUCCESS_URL,
+    failureRedirect: process.env.SERVER_LOGIN_FAILURE_URL,
   }),
   handleLogin
 );
@@ -67,8 +68,8 @@ router.get(
 router.get(
   "/facebook/redirect",
   passport.authenticate("facebook", {
-    successRedirect: CLIENT_LOGIN_PAGE_URL,
-    failureRedirect: SERVER_LOGIN_FAILURE,
+    successRedirect: process.env.CLIENT_LOGIN_SUCCESS_URL,
+    failureRedirect: process.env.SERVER_LOGIN_FAILURE_URL,
   })
 );
 router.get("/logout", handleLogout);

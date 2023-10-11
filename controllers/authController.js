@@ -1,6 +1,13 @@
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
+
+const bcryptSalt = process.env.BCRYPT_SALT;
+
 const bcrypt = require("bcrypt");
 
 const userQueries = require("../database/userQueries");
+const Token = require("../models/token");
 
 const handleSignUp = async (req, res, next) => {
   const existingUser = await userQueries.getUser(req.body.email);
@@ -8,7 +15,10 @@ const handleSignUp = async (req, res, next) => {
     res.json({ loggedIn: false, status: "This email is already registered." });
     console.log("email already registered");
   } else {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const hashedPassword = await bcrypt.hash(
+      req.body.password,
+      Number(bcryptSalt)
+    );
     const newUserStatus = await userQueries.createUser(
       req.body.name,
       req.body.email,
@@ -45,54 +55,50 @@ const checkLogin = (req, res) => {
   }
 };
 
-const passwordResetCodeGenerator = () =>
-  Math.floor(Math.random() * 90000) + 10000;
-
-const sendResetCode = async (req, res) => {
-  const userEmail = req.body.email;
-  const user = await userQueries.getUser(userEmail);
-  if (!user || !user.password) {
+const requestPasswordReset = async (req, res) => {
+  const user = await userQueries.getUser(req.body.email);
+  if (!user) {
+    res.json("no user found");
     return;
   }
-  const resetCode = passwordResetCodeGenerator();
-  console.log(resetCode);
-  req.session.resetCodeInfo = {
-    userEmail,
-    resetCode,
-  };
-  setTimeout(() => {
-    req.session.resetCodeInfo = null;
-  }, 1000 * 60 * 5);
+  const token = await Token.findOne({ userId: user._id });
+  if (token) await Token.deleteOne();
+  const resetToken = crypto.randomBytes(32).toString("hex");
+  const hashedToken = await bcrypt.hash(resetToken, Number(bcryptSalt));
+
+  await new Token({
+    userId: user._id,
+    token: hashedToken,
+    createdAt: Date.now(),
+  }).save();
 };
 
-const checkResetCode = (req, res) => {
-  if (!req.session.resetCodeInfo) {
-    res.json("time expired");
+const verifyToken = async (req, res) => {
+  const userInputResetToken = req.body.resetCode;
+  const passwordResetToken = await Token.findOne({
+    token: userInputResetToken,
+  });
+  const invalidMessage = "Invalid or expired password reset code.";
+  if (!passwordResetToken) {
+    res.json(invalidMessage);
+    return;
+  }
+  const isValid = await bcrypt.compare(
+    userInputResetToken,
+    passwordResetToken.token
+  );
+  if (!isValid) {
+    res.json(invalidMessage);
   } else {
-    if (req.body.resetCode === req.session.resetCodeInfo.resetCode) {
-      res.json("code matches");
-    } else {
-      res.json("code does not match");
-    }
+    res.json(passwordResetToken.userId);
   }
 };
 
 const resetPassword = async (req, res) => {
-  const { resetCodeInfo } = req.session;
-  const { userEmail } = resetCodeInfo;
-  const newPassword = req.body.newPassword;
-  const user = await userQueries.getUser(userEmail);
-  if (
-    newPassword === user.password ||
-    user.previousPasswords.find((oldPassword) => oldPassword === newPassword)
-  ) {
-    res.json("password is equal to previous password");
-  } else {
-    user.previousPasswords.push(user.password);
-    user.password = newPassword;
-    await user.save()
-    res.json("success");
-  }
+  const userId = req.params.id;
+  const user = await userQueries.getUserById(userId);
+  user.password = req.body.password;
+  await user.save();
 };
 
 const checkAuthentication = (req, res, next) => {

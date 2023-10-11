@@ -9,6 +9,7 @@ const questionSchema = new Schema({
   question: {
     type: String,
     required: true,
+    trim: true,
   },
   shortAnswer: String,
   answerOne: String,
@@ -28,6 +29,7 @@ const quizSchema = new Schema({
     type: String,
     required: true,
     maxLength: 15,
+    trim: true,
   },
   minPoints: {
     type: Number,
