@@ -30,6 +30,13 @@ const modifyQuiz = async (req, res) => {
   const quizId = req.params.id;
   const { quizDetails, questions } = req.body;
   const { quizName, minPoints, maxPoints } = quizDetails;
+  const userQuizzes = await userQueries.getUserQuizzes(req.user.id);
+  const filteredQuizzes = userQuizzes.filter((quiz) => quiz._id !== quizId);
+  if (filteredQuizzes.find((quiz) => quiz.quizName === quizName)) {
+    res.json("A quiz with this name already exists.");
+    return;
+  }
+
   const currentQuiz = await quizQueries.getQuiz(quizId);
   currentQuiz.quizName = quizName;
   currentQuiz.minPoints = minPoints;

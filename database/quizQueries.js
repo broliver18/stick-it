@@ -10,7 +10,7 @@ const quizQueries = {
   createQuiz: async (user, quizDetails, questions) => {
     const { quizName, minPoints, maxPoints } = quizDetails;
     try {
-      const userQuizzes = await userQueries.getUserQuizzes(user.email);
+      const userQuizzes = await userQueries.getUserQuizzes(user.id);
       if (userQuizzes.find((quiz) => quiz.quizName === quizName)) {
         return "A quiz with this name already exists.";
       } else {

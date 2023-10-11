@@ -55,7 +55,7 @@ const checkLogin = (req, res) => {
   }
 };
 
-const requestPasswordReset = async (req, res) => {
+const requestResetToken = async (req, res) => {
   const user = await userQueries.getUser(req.body.email);
   if (!user) {
     res.json("no user found");

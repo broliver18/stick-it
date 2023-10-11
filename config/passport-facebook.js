@@ -26,8 +26,8 @@ function initialize(passport) {
         return done(null, false);
       } else {
         new User({
-          facebookId: profile.id,
           name: profile.displayName,
+          facebookId: profile.id,
           email,
         })
           .save()
