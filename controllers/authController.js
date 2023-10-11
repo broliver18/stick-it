@@ -97,7 +97,9 @@ const verifyToken = async (req, res) => {
 const resetPassword = async (req, res) => {
   const userId = req.params.id;
   const user = await userQueries.getUserById(userId);
-  user.password = req.body.password;
+  const newPassword = req.body.password;
+  const hashedNewPassword = await bcrypt.hash(newPassword, bcryptSalt);
+  user.password = hashedNewPassword;
   await user.save();
 };
 

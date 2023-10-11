@@ -28,11 +28,6 @@ const userSchema = new Schema({
   password: {
     type: String,
   },
-  previousPasswords: [
-    {
-      type: String,
-    },
-  ],
   quizzes: [
     {
       type: Schema.Types.ObjectId,
@@ -42,15 +37,5 @@ const userSchema = new Schema({
 });
 
 userSchema.set("timestamps", true);
-
-userSchema.pre("save", async (next) => {
-  if (!this.isModified("password")) return next();
-  const hashedPassword = await bcrypt.hash(
-    this.password,
-    Number(bcryptSalt),
-  );
-  this.password = hashedPassword;
-  next();
-});
 
 module.exports = mongoose.model("User", userSchema);
