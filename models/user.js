@@ -2,9 +2,6 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const bcryptSalt = process.env.BCRYPT_SALT
-
-const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
