@@ -10,7 +10,7 @@ function initialize(passport) {
   const facebookClientInfo = {
     clientID: process.env.FACEBOOK_CLIENT_ID,
     clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
-    callbackURL: "http://localhost:4000/auth/facebook/redirect",
+    callbackURL: process.env.FACEBOOK_REDIRECT_URI,
     profileFields: ["displayName", "email"],
   };
 
