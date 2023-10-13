@@ -74,9 +74,10 @@ const requestResetToken = async (req, res) => {
 };
 
 const verifyToken = async (req, res) => {
+  const userId = req.params.id;
   const userInputResetToken = req.body.resetCode;
   const passwordResetToken = await Token.findOne({
-    token: userInputResetToken,
+    userId,
   });
   const invalidMessage = "Invalid or expired password reset code.";
   if (!passwordResetToken) {
