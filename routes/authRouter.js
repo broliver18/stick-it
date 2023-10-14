@@ -13,6 +13,9 @@ const {
   handleLogin,
   handleLogout,
   checkLogin,
+  requestResetToken,
+  verifyToken,
+  resetPassword,
 } = require("../controllers/authController");
 const { rateLimiter } = require("../controllers/rateLimiter");
 
@@ -36,17 +39,13 @@ const requestResetTokenSchema = Yup.object({
   email: Yup.string().required("Email required").email("Invalid email address"),
 });
 
-const verifyToken = Yup.object({
-  resetCode: Yup.string().required("Code required"),
-});
-
 const resetPasswordSchema = Yup.object({
   newPassword: Yup.string()
     .required("Password required")
     .min(8, "The password is too short"),
   confirmPassword: Yup.string()
     .required("Confirm password required")
-    .oneOf([Yup.ref("password"), null], "Passwords must match"),
+    .oneOf([Yup.ref("newPassword"), null], "Passwords must match"),
 });
 
 router.post(
@@ -91,6 +90,17 @@ router.get(
     successRedirect: process.env.CLIENT_LOGIN_SUCCESS_URL,
     failureRedirect: process.env.CLIENT_LOGIN_FAILURE_URL,
   })
+);
+router.post(
+  "/requestToken",
+  validateForm(requestResetTokenSchema),
+  requestResetToken
+);
+router.get("/verifyToken/:id", verifyToken);
+router.put(
+  "/reset-password/:id",
+  validateForm(resetPasswordSchema),
+  resetPassword
 );
 router.get("/logout", handleLogout);
 

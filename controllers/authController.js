@@ -58,12 +58,15 @@ const checkLogin = (req, res) => {
 const requestResetToken = async (req, res) => {
   const user = await userQueries.getUser(req.body.email);
   if (!user) {
-    res.json("no user found");
+    const message = "no user found";
+    console.log(message);
+    res.json(message);
     return;
   }
   const token = await Token.findOne({ userId: user._id });
   if (token) await Token.deleteOne();
-  const resetToken = crypto.randomBytes(32).toString("hex");
+  const resetTokenNum = Math.floor(Math.random() * 90000) + 10000;
+  const resetToken = resetTokenNum.toString();
   const hashedToken = await bcrypt.hash(resetToken, Number(bcryptSalt));
 
   await new Token({
@@ -72,17 +75,20 @@ const requestResetToken = async (req, res) => {
     createdAt: Date.now(),
   }).save();
 
+  console.log("token successfully created");
+  console.log(resetToken);
   res.json(user._id);
 };
 
 const verifyToken = async (req, res) => {
   const userId = req.params.id;
-  const userInputResetToken = req.body.resetCode;
+  const userInputResetToken = req.query.token;
   const passwordResetToken = await Token.findOne({
     userId,
   });
   const invalidMessage = "Invalid or expired password reset code.";
   if (!passwordResetToken) {
+    console.log(invalidMessage);
     res.json(invalidMessage);
     return;
   }
@@ -91,19 +97,24 @@ const verifyToken = async (req, res) => {
     passwordResetToken.token
   );
   if (!isValid) {
+    console.log(invalidMessage);
     res.json(invalidMessage);
   } else {
-    res.json(passwordResetToken.userId);
+    console.log("tokens match");
+    res.json("success");
   }
 };
 
 const resetPassword = async (req, res) => {
   const userId = req.params.id;
   const user = await userQueries.getUserById(userId);
-  const newPassword = req.body.password;
-  const hashedNewPassword = await bcrypt.hash(newPassword, bcryptSalt);
+  const newPassword = req.body.newPassword;
+  const hashedNewPassword = await bcrypt.hash(newPassword, Number(bcryptSalt));
   user.password = hashedNewPassword;
   await user.save();
+
+  console.log("password successfully changed")
+  res.json("success");
 };
 
 const checkAuthentication = (req, res, next) => {
@@ -117,5 +128,8 @@ module.exports = {
   handleLogin,
   handleLogout,
   checkLogin,
+  requestResetToken,
+  verifyToken,
+  resetPassword,
   checkAuthentication,
 };
