@@ -71,6 +71,8 @@ const requestResetToken = async (req, res) => {
     token: hashedToken,
     createdAt: Date.now(),
   }).save();
+
+  res.json(user._id);
 };
 
 const verifyToken = async (req, res) => {
