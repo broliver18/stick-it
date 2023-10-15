@@ -2,12 +2,12 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-const bcryptSalt = process.env.BCRYPT_SALT;
-
 const bcrypt = require("bcrypt");
+const bcryptSalt = process.env.BCRYPT_SALT;
 
 const userQueries = require("../database/userQueries");
 const Token = require("../models/token");
+const { automatedEmails, sendResetToken } = require("../service/automatedEmails");
 
 const handleSignUp = async (req, res, next) => {
   const existingUser = await userQueries.getUser(req.body.email);
@@ -57,14 +57,14 @@ const checkLogin = (req, res) => {
 
 const requestResetToken = async (req, res) => {
   const user = await userQueries.getUser(req.body.email);
-  if (!user) {
+  if (!user || !user.password) {
     const message = "no user found";
     console.log(message);
     res.json(message);
     return;
   }
   const token = await Token.findOne({ userId: user._id });
-  if (token) await Token.deleteOne();
+  if (token) await Token.deleteOne({ userId: user._id });
   const resetTokenNum = Math.floor(Math.random() * 90000) + 10000;
   const resetToken = resetTokenNum.toString();
   const hashedToken = await bcrypt.hash(resetToken, Number(bcryptSalt));
@@ -77,6 +77,7 @@ const requestResetToken = async (req, res) => {
 
   console.log("token successfully created");
   console.log(resetToken);
+ 
   res.json(user._id);
 };
 
@@ -113,6 +114,7 @@ const resetPassword = async (req, res) => {
   user.password = hashedNewPassword;
   await user.save();
 
+  await Token.deleteOne({ userId });
   console.log("password successfully changed")
   res.json("success");
 };

@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== "production") {
 const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
-  host: smtp - mail.outlook.com,
+  host: "smtp-mail.outlook.com",
   port: 587,
   secure: false,
   auth: {

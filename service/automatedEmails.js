@@ -6,5 +6,9 @@ const sendResetToken = async (userEmail) => {
         to: userEmail,
         subject: "Reset Password Verification Code",
         html: '<h1>Password Reset Code</h1>'
-    })
+    });
+
+    console.log("Message sent: %s", info.messageId);
 }
+
+module.exports = { sendResetToken };
