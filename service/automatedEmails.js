@@ -1,14 +1,47 @@
-const transporter = require("../nodemailerTransporter");
-
-const sendResetToken = async (userEmail) => {
-    const info = await transporter.sendMail({
-        from: '"Stick It" <bruno200710@hotmail.com>',
-        to: userEmail,
-        subject: "Reset Password Verification Code",
-        html: '<h1>Password Reset Code</h1>'
-    });
-
-    console.log("Message sent: %s", info.messageId);
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
 }
 
-module.exports = { sendResetToken };
+const transporter = require("../smtpTransport");
+
+const sendWelcome = async (userEmail) => {
+  const info = await transporter.sendMail({
+    from: `"Stick It" <${process.env.EMAIL_ADDRESS}>`,
+    to: userEmail,
+    subject: "Welcome",
+    template:"welcome",
+  });
+
+  console.log("Message sent: %s", info.messageId);
+};
+
+const sendResetToken = async (userEmail, token) => {
+  const info = await transporter.sendMail({
+    from: `"Stick It" <${process.env.EMAIL_ADDRESS}>`,
+    to: userEmail,
+    subject: "Stick It Password Reset",
+    template: "reset-token",
+    context: {
+      userEmail,
+      token,
+    },
+  });
+
+  console.log("Message sent: %s", info.messageId);
+};
+
+const sendResetConfirmation = async (userEmail) => {
+    const info = await transporter.sendMail({
+      from: `"Stick It" <${process.env.EMAIL_ADDRESS}>`,
+      to: userEmail,
+      subject: "Stick It Password Confirmation",
+      template: "reset-confirmation",
+      context: {
+        userEmail,
+      },
+    });
+  
+    console.log("Message sent: %s", info.messageId);
+  };
+
+module.exports = { sendWelcome, sendResetToken, sendResetConfirmation };

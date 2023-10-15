@@ -7,7 +7,7 @@ const bcryptSalt = process.env.BCRYPT_SALT;
 
 const userQueries = require("../database/userQueries");
 const Token = require("../models/token");
-const { automatedEmails, sendResetToken } = require("../service/automatedEmails");
+const { sendWelcome, sendResetToken, sendResetConfirmation } = require("../service/automatedEmails");
 
 const handleSignUp = async (req, res, next) => {
   const existingUser = await userQueries.getUser(req.body.email);
@@ -25,6 +25,7 @@ const handleSignUp = async (req, res, next) => {
       hashedPassword
     );
     if (newUserStatus === "success") {
+      sendWelcome(req.body.email).catch(console.error);
       return next();
     }
   }
@@ -77,7 +78,7 @@ const requestResetToken = async (req, res) => {
 
   console.log("token successfully created");
   console.log(resetToken);
- 
+  sendResetToken(user.email, resetToken).catch(console.error);
   res.json(user._id);
 };
 
@@ -116,6 +117,7 @@ const resetPassword = async (req, res) => {
 
   await Token.deleteOne({ userId });
   console.log("password successfully changed")
+  sendResetConfirmation(user.email).catch(console.error);
   res.json("success");
 };
 
