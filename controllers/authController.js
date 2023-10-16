@@ -77,7 +77,6 @@ const requestResetToken = async (req, res) => {
   }).save();
 
   console.log("token successfully created");
-  console.log(resetToken);
   sendResetToken(user.email, resetToken).catch(console.error);
   res.json(user._id);
 };

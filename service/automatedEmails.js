@@ -19,7 +19,7 @@ const sendResetToken = async (userEmail, token) => {
   const info = await transporter.sendMail({
     from: `"Stick It" <${process.env.EMAIL_ADDRESS}>`,
     to: userEmail,
-    subject: "Stick It Password Reset",
+    subject: "Password Reset",
     template: "reset-token",
     context: {
       userEmail,
@@ -34,7 +34,7 @@ const sendResetConfirmation = async (userEmail) => {
     const info = await transporter.sendMail({
       from: `"Stick It" <${process.env.EMAIL_ADDRESS}>`,
       to: userEmail,
-      subject: "Stick It Password Confirmation",
+      subject: "Password Confirmation",
       template: "reset-confirmation",
       context: {
         userEmail,
