@@ -124,6 +124,9 @@ const checkAuthentication = (req, res, next) => {
   if (req.isAuthenticated()) {
     return next();
   }
+  else {
+    res.json("not logged in");
+  }
 };
 
 module.exports = {
