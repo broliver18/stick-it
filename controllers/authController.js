@@ -66,7 +66,7 @@ const requestResetToken = async (req, res) => {
   }
   const token = await Token.findOne({ userId: user._id });
   if (token) await Token.deleteOne({ userId: user._id });
-  const resetTokenNum = Math.floor(Math.random() * 90000) + 10000;
+  const resetTokenNum = Math.floor(Math.random() * 900000) + 100000;
   const resetToken = resetTokenNum.toString();
   const hashedToken = await bcrypt.hash(resetToken, Number(bcryptSalt));
 
