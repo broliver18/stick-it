@@ -30,6 +30,8 @@ const registerPlayerHandlers = require("./handlers/playerHandlers");
 const registerGameHandlers = require("./handlers/gameHandlers");
 const registerDisconnectHandlers = require("./handlers/disconnectHandlers");
 
+app.set("trust proxy", 1);
+
 app.use(cors(corsConfig));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
