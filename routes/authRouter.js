@@ -72,8 +72,8 @@ router.get(
 router.get(
   "/google/redirect",
   passport.authenticate("google", {
-    successRedirect: process.env.CLIENT_LOGIN_SUCCESS_URL,
-    failureRedirect: process.env.CLIENT_LOGIN_FAILURE_URL,
+    successRedirect: `${process.env.CLIENT_URL}/host`,
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
   }),
   handleLogin
 );
@@ -87,8 +87,8 @@ router.get(
 router.get(
   "/facebook/redirect",
   passport.authenticate("facebook", {
-    successRedirect: process.env.CLIENT_LOGIN_SUCCESS_URL,
-    failureRedirect: process.env.CLIENT_LOGIN_FAILURE_URL,
+    successRedirect: `${process.env.CLIENT_URL}/host`,
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
   })
 );
 router.post(
