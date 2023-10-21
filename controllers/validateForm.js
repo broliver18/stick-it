@@ -1,4 +1,4 @@
-function validateForm(formSchema) {
+module.exports.validateForm = (formSchema) => {
   return (req, res, next) => {
     const formData = req.body;
     formSchema
@@ -18,5 +18,3 @@ function validateForm(formSchema) {
       });
   };
 }
-
-module.exports = validateForm;
