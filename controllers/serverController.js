@@ -7,7 +7,7 @@ const RedisStore = require("connect-redis").default;
 const session = require("express-session");
 
 const corsConfig = {
-  origin: "http://localhost:3000",
+  origin: process.env.CLIENT_URL,
   credentials: true,
 };
 

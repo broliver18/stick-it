@@ -9,6 +9,7 @@ const http = require("http");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const app = express();
+const helmet = require("helmet");
 const server = http.createServer(app);
 const dbURI = `mongodb+srv://brunoolive504:${process.env.MONGODB_PASSWORD}@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
 const {
@@ -33,6 +34,7 @@ const registerDisconnectHandlers = require("./handlers/disconnectHandlers");
 app.set("trust proxy", 1);
 
 app.use(cors(corsConfig));
+app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(sessionMiddleware);
