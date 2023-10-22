@@ -1,6 +1,5 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+require("dotenv").config();
+
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 

@@ -1,6 +1,4 @@
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
+require("dotenv").config();
 
 const bcrypt = require("bcrypt");
 const bcryptSalt = process.env.BCRYPT_SALT;
