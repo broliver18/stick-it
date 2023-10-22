@@ -53,6 +53,7 @@ app.use("/auth", authRouter);
 app.use("/profile", quizRouter);
 
 const onConnection = (socket) => {
+  console.log(process.env);
   registerHostHandlers(io, socket);
   registerPlayerHandlers(io, socket);
   registerGameHandlers(io, socket);
