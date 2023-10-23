@@ -6,7 +6,7 @@ const RedisStore = require("connect-redis").default;
 const session = require("express-session");
 
 const corsConfig = {
-  origin: process.env.CLIENT_URL,
+  origin: "https://stickitfront.netlify.app",
   credentials: true,
 };
 
