@@ -1,5 +1,6 @@
 require("dotenv").config();
 
+
 const transporter = require("../smtpTransport");
 
 const sendWelcome = async (userEmail) => {
