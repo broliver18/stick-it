@@ -9,7 +9,7 @@ function initialize(passport) {
   const googleClientInfo = {
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_REDIRECT_URI,
+    callbackURL: `${process.env.SERVER_URL}/auth/google/redirect`,
   };
 
   const passportCallback = async (accessToken, refreshToken, profile, done) => {
