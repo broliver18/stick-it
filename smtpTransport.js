@@ -6,7 +6,7 @@ const nodemailer = require("nodemailer");
 const hbs = require("nodemailer-express-handlebars");
 
 const transporter = nodemailer.createTransport({
-  host: "smtpout.secureserver.net",
+  host: process.env.SMTP_HOST,
   port: 587,
   secure: false,
   auth: {
