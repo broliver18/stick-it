@@ -6,7 +6,7 @@ const passport = require("passport");
 const router = express.Router();
 const Yup = require("yup");
 
-const validateForm = require("../controllers/validateForm");
+const { validateForm } = require("../controllers/validateForm");
 const {
   handleSignUp,
   handleLogin,
