@@ -6,6 +6,7 @@ const bcryptSalt = process.env.BCRYPT_SALT;
 
 const userQueries = require("../database/userQueries");
 const Token = require("../models/token");
+
 const { sendWelcome, sendResetToken, sendResetConfirmation } = require("../service/automatedEmails");
 
 const handleSignUp = async (req, res, next) => {
@@ -31,8 +32,9 @@ const handleSignUp = async (req, res, next) => {
 };
 
 const handleLogin = (req, res) => {
-  const names = req.user.name.split(" ");
-  res.json({ loggedIn: true, username: names[0] });
+  const firstName = req.user.name.split(" ")[0];
+  const token = req.user.generateJWT();
+  res.json({ loggedIn: true, username: firstName, jwtToken: token });
   console.log("login was successful");
 };
 
@@ -48,8 +50,8 @@ const handleLogout = (req, res, next) => {
 
 const checkLogin = (req, res) => {
   if (req.user) {
-    const names = req.user.name.split(" ");
-    res.json({ loggedIn: true, username: names[0] });
+    const firstName = req.user.name.split(" ")[0];
+    res.json({ loggedIn: true, username: firstName });
   } else {
     res.json("not logged in");
   }
@@ -119,15 +121,6 @@ const resetPassword = async (req, res) => {
   res.json("success");
 };
 
-const checkAuthentication = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  else {
-    res.json("not logged in");
-  }
-};
-
 module.exports = {
   handleSignUp,
   handleLogin,
@@ -136,5 +129,4 @@ module.exports = {
   requestResetToken,
   verifyToken,
   resetPassword,
-  checkAuthentication,
 };

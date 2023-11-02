@@ -24,7 +24,7 @@ function initialize(passport) {
     }
   };
 
-  passport.use(new LocalStrategy({ usernameField: "email" }, authenticateUser));
+  passport.use(new LocalStrategy({ usernameField: "email", session: false }, authenticateUser));
 }
 
 module.exports = initialize;

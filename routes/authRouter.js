@@ -1,8 +1,8 @@
 require("dotenv").config();
 
-
 const express = require("express");
 const passport = require("passport");
+const authenticateLocal = require("../controllers/authenticateLocal");
 const router = express.Router();
 const Yup = require("yup");
 
@@ -52,17 +52,12 @@ router.post(
   validateForm(signUpSchema),
   rateLimiter,
   handleSignUp,
-  passport.authenticate("local"),
+  authenticateLocal,
   handleLogin
 );
 router
   .route("/login")
-  .post(
-    validateForm(loginSchema),
-    rateLimiter,
-    passport.authenticate("local"),
-    handleLogin
-  )
+  .post(validateForm(loginSchema), rateLimiter, authenticateLocal, handleLogin)
   .get(checkLogin);
 router.get(
   "/google",
@@ -71,10 +66,14 @@ router.get(
 router.get(
   "/google/redirect",
   passport.authenticate("google", {
-    successRedirect: `${process.env.CLIENT_URL}/host`,
     failureRedirect: `${process.env.CLIENT_URL}/login`,
+    session: false,
   }),
-  handleLogin
+  (req, res) => {
+    const token = req.user.generateJWT();
+    res.cookie("x-auth-cookie", token);
+    res.redirect(`${process.env.CLIENT_URL}/host`);
+  }
 );
 router.get(
   "/facebook",
@@ -86,9 +85,14 @@ router.get(
 router.get(
   "/facebook/redirect",
   passport.authenticate("facebook", {
-    successRedirect: `${process.env.CLIENT_URL}/host`,
     failureRedirect: `${process.env.CLIENT_URL}/login`,
-  })
+    session: false,
+  }),
+  (req, res) => {
+    const token = req.user.generateJWT();
+    res.cookie("x-auth-cookie", token);
+    res.redirect(`${process.env.CLIENT_URL}/host`);
+  }
 );
 router.post(
   "/requestToken",

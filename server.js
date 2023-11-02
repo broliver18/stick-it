@@ -13,7 +13,6 @@ const server = http.createServer(app);
 const dbURI = `mongodb+srv://brunoolive504:${process.env.MONGODB_PASSWORD}@stick-it.6mxliys.mongodb.net/stick-it?retryWrites=true&w=majority`;
 const {
   corsConfig,
-  sessionMiddleware,
 } = require("./controllers/serverController");
 const io = new Server(server, {
   cors: corsConfig,
@@ -21,7 +20,7 @@ const io = new Server(server, {
 
 const authRouter = require("./routes/authRouter");
 const quizRouter = require("./routes/quizRouter");
-const userQueries = require("./database/userQueries");
+const authenticateToken = require("./controllers/authenticateToken");
 const initializePassportLocal = require("./config/passport-local");
 const initializePassportGoogle = require("./config/passport-google");
 const initializePassportFacebook = require("./config/passport-facebook");
@@ -36,21 +35,14 @@ app.use(cors(corsConfig));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(sessionMiddleware);
 
 app.use(passport.initialize());
-app.use(passport.session());
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser(async (id, done) => {
-  const user = await userQueries.getUserById(id);
-  return done(null, user);
-});
 initializePassportLocal(passport);
 initializePassportGoogle(passport);
 initializePassportFacebook(passport);
 
 app.use("/auth", authRouter);
-app.use("/profile", quizRouter);
+app.use("/profile", authenticateToken, quizRouter);
 
 const onConnection = (socket) => {
   registerHostHandlers(io, socket);
@@ -59,7 +51,6 @@ const onConnection = (socket) => {
   registerDisconnectHandlers(io, socket);
 };
 
-io.engine.use(sessionMiddleware);
 io.on("connection", onConnection);
 
 mongoose
