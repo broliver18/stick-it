@@ -46,6 +46,7 @@ const handleLogout = (req, res, next) => {
   });
 };
 
+// Don't think this function is being used but also don't want to delete it and cause a bug
 const checkLogin = (req, res) => {
   if (req.user) {
     const names = req.user.name.split(" ");
@@ -124,7 +125,7 @@ const checkAuthentication = (req, res, next) => {
     return next();
   }
   else {
-    res.json("not logged in");
+    res.json("You are not logged in.");
   }
 };
 

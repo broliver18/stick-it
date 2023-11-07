@@ -1,7 +1,7 @@
 require("dotenv").config();
 
-
 const FacebookStrategy = require("passport-facebook").Strategy;
+const { sendWelcome } = require("../service/automatedEmails");
 
 const User = require("../models/user");
 
@@ -34,6 +34,7 @@ function initialize(passport) {
             console.log("New user created using Facebook OAuth 2.0");
             done(null, newUser);
           });
+        sendWelcome(email).catch(console.error);
       }
     }
   };

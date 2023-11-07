@@ -74,7 +74,6 @@ router.get(
     successRedirect: `${process.env.CLIENT_URL}/host`,
     failureRedirect: `${process.env.CLIENT_URL}/login`,
   }),
-  handleLogin
 );
 router.get(
   "/facebook",

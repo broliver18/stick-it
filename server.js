@@ -22,6 +22,7 @@ const io = new Server(server, {
 const authRouter = require("./routes/authRouter");
 const quizRouter = require("./routes/quizRouter");
 const userQueries = require("./database/userQueries");
+const { checkAuthentication } = require("./controllers/authController");
 const initializePassportLocal = require("./config/passport-local");
 const initializePassportGoogle = require("./config/passport-google");
 const initializePassportFacebook = require("./config/passport-facebook");
@@ -49,8 +50,11 @@ initializePassportLocal(passport);
 initializePassportGoogle(passport);
 initializePassportFacebook(passport);
 
+app.get("/", (req, res) => {
+  res.redirect(process.env.CLIENT_URL);
+});
 app.use("/auth", authRouter);
-app.use("/profile", quizRouter);
+app.use("/profile", checkAuthentication, quizRouter);
 
 const onConnection = (socket) => {
   registerHostHandlers(io, socket);

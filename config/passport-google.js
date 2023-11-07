@@ -1,7 +1,7 @@
 require("dotenv").config();
 
-
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const { sendWelcome } = require("../service/automatedEmails");
 
 const User = require("../models/user");
 
@@ -33,6 +33,7 @@ function initialize(passport) {
             console.log("New user created using Google OAuth 2.0");
             done(null, newUser);
           });
+        sendWelcome(email).catch(console.error);
       }
     }
   };
