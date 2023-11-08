@@ -3,7 +3,7 @@ class Games {
         this.games = [];
     }
     addGame(pin, hostId, gameLive, gameData) {
-        const game = {pin, hostId, gameLive, gameData};
+        const game = { pin, hostId, gameLive, gameData };
         this.games.push(game);
         return game;
     }
