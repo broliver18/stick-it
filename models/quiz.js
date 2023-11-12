@@ -28,18 +28,18 @@ const quizSchema = new Schema({
   quizName: {
     type: String,
     required: true,
-    maxLength: 15,
+    maxLength: 45,
     trim: true,
   },
   minPoints: {
     type: Number,
     required: true,
-    min: -1000,
+    min: -9999,
   },
   maxPoints: {
     type: Number,
     required: true,
-    max: 1000,
+    max: 9999,
   },
   questions: [questionSchema],
 });

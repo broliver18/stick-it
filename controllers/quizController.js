@@ -40,6 +40,18 @@ const modifyQuiz = async (req, res) => {
     return;
   }
 
+  if (quizName.length > 45) {
+    res.json("The quiz name cannot exceed 30 characters.");
+    return;
+  }  
+  if (minPoints < -9999) {
+    res.json("The minimum points cannot be lower than 9000.");
+    return;
+  }
+  if (maxPoints > 9999) {
+    res.json("The maximum points cannot be greater than 9000.");
+  }
+
   currentQuiz.quizName = quizName;
   currentQuiz.minPoints = minPoints;
   currentQuiz.maxPoints = maxPoints;
