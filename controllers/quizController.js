@@ -41,7 +41,7 @@ const modifyQuiz = async (req, res) => {
   }
 
   if (quizName.length > 45) {
-    res.json("The quiz name cannot exceed 30 characters.");
+    res.json("The quiz name cannot exceed 45 characters.");
     return;
   }  
   if (minPoints < -9999) {
